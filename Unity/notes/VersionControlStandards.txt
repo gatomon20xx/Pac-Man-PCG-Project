@@ -1,0 +1,48 @@
+Push/Pull Standard
+==================
+ - ALWAYS PULL before pushing (esp to main and dev)
+ - test your branch for web deployment before merging with dev/main etc.
+
+
+Branching Strategy: simplified gitflow
+======================================
+Server Branches
+---------------
+main: protected. Only STABLE verions
+ -- tag releases from main
+dev: semi-protected. used to merge team's work
+
+
+
+Local Branches - for lone devs
+------------------------------
+ <local branches>: use to develop and hot fix locally
+
+
+
+Commit Messages
+===============
+Each commit message should contain:
+ 1. [#<github issue number>] (if applicable). You can look up the github issue number here: https://github.com/qed-lab/ProjectCODE/projects
+ 2. [<short general description of what changes apply to>]
+ 3. a short (but complete) list of changes for the commit with more detail
+ 
+TEMPLATES:
+ -- Short commit message (Quick fix, simple changes, etc.)
+	[#<github issue number>] [what was updated] how it was changed/updated
+
+ -- Long commit message (e.g. complicated fix, lots of changes, new additions)
+	[#<github issue number>] [1. what was updated] 
+	 - how it was changed/updated
+	
+	[#<github issue number>] [2. what was updated] 
+	 - how it was changed/updated
+	 - another way it was updated
+
+EXAMPLE long commit message
+	[#0] [Simulation]
+	 - Updated obj_sim with updated output function
+	 - Added new modeling system
+	 
+	[#1] [play_instructions in Notes] 
+	 - Updated instructions to reflect latest updates
