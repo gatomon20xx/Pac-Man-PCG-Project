@@ -87,6 +87,28 @@ public class MapManager : MonoBehaviour
         //SetUpMapFromString(_maps[currentMapIndex].mapStringRaw);
     }
 
+    private void ClearMap(string[] mapStringsArray)
+    {
+        int row = 0;
+        Vector3Int newTilePos;
+        foreach (var rowString in mapStringsArray)
+        {
+            for (int col = 0; col < mapStringsArray[row].Length; col++)
+            {
+                newTilePos = this.GetTileWorldPosFromRowCol(row, col);
+                if (!(row >= 12 && row <= 16 && col >= 10 && col <= 17))
+                {
+                    Debug.Log("Space cleared");
+                    walls.SetTile(newTilePos, null);
+                    turnNodes.SetTile(newTilePos, null);
+                    specialNodes.SetTile(newTilePos, null);
+                    pellets.SetTile(newTilePos, null);
+                }
+            }
+            row++;
+        }
+    }
+
     public void GetNextLevel(Sample sample = null)
     {
         bool pcgMapWorked = false;
@@ -163,6 +185,8 @@ public class MapManager : MonoBehaviour
         //string[] mapStringsArray = i_mapFullString.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
 
         string[] mapStringsArray = _maps[currentMapIndex].mapStringSplit;
+
+        ClearMap(mapStringsArray);
 
         char charTileSymbol;
         TileBase setTile = null;

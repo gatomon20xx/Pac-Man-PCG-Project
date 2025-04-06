@@ -90,6 +90,12 @@ public class PCG
     {
         BaseMapData = i_BaseMapData;
 
+        reinitializeMap();
+
+    }
+
+    private void reinitializeMap()
+    {
         map = Mapgen.returnMap();
         string mapShape = map.generateText();
 
@@ -116,7 +122,6 @@ public class PCG
         {
             baseStringBuilderArray.Add(new StringBuilder(BaseMapStringArray[row]));
         }
-
     }
 
     private int StringBuilderIndexOfChar(StringBuilder i_sb, char i_check, int i_start = 0, int i_end=-1)
@@ -141,6 +146,8 @@ public class PCG
         int countPelletsTot = 0;
         int countPelletsReg = 0;
         int countPelletsPower = 0;
+
+        reinitializeMap();
 
         // This should be a deep copy
         List<StringBuilder> newMapStringBuilderList = BaseMapStringArray.Select(s => new StringBuilder(string.Copy(s))).ToList();
