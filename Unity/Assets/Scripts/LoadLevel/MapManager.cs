@@ -253,6 +253,9 @@ public class MapManager : MonoBehaviour
                     case '|':
                         setTile = tileWall;
                         break;
+                    case '-':
+                        setTile = tileWall;
+                        break;
                     case ' ':
                         setTile = null;
                         break;

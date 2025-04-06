@@ -98,7 +98,8 @@ public class PCG
         //Replace all instances of pellets.
         BaseMapStringRaw = BaseMapData.mapStringRaw.Replace('.', ' ');
         BaseMapStringRaw = BaseMapStringRaw.Replace('o', ' ');
-        // BaseMapStringRaw = BaseMapStringRaw.Replace('|', ' ');
+        BaseMapStringRaw = BaseMapStringRaw.Replace('-', '|');
+        BaseMapStringRaw = BaseMapStringRaw.Replace('e', '|');
 
         BaseMapStringArray = BaseMapStringRaw.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
 
