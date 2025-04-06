@@ -109,19 +109,19 @@ public class MapManager : MonoBehaviour
         }
     }
 
-    public void GetNextLevel(Sample sample = null)
+    public void GetNextLevel(Sample sample = null, Sample probsample = null)
     {
         bool pcgMapWorked = false;
 
-        if (isLoadingNewMapsViaPCG && sample == null)
+        if (isLoadingNewMapsViaPCG && (sample == null || probsample == null))
         {
             pcgMapWorked = LoadAndDrawPCGMap(pcg.GenerateMap( pcg.CreateRandomizedMapFeatures() ));
             if (pcgMapWorked)
                 return;
         }
-        else if(isLoadingNewMapsViaPCG && sample != null)
+        else if(isLoadingNewMapsViaPCG && sample != null && probsample != null)
         {
-            pcgMapWorked = LoadAndDrawPCGMap(pcg.GenerateMap(pcg.CreateMapFromPCCSample(sample)));
+            pcgMapWorked = LoadAndDrawPCGMap(pcg.GenerateMap(pcg.CreateMapFromPCCSample(sample, probsample)));
             if (pcgMapWorked)
                 return;
         }

@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     // Player Preference
     private PlayerPrefs playerPrefs = new PlayerPrefs();
     private PCC.ContentRepresentation.Sample.Sample m_sample;
+    private PCC.ContentRepresentation.Sample.Sample p_sample;
     // Player Preference
 
     public KeyCode keyCode_Love = KeyCode.G;
@@ -104,16 +105,19 @@ public class GameManager : MonoBehaviour
     // Could add a function to draw the map! :D
     private void NewLevel()
     {
+        // Separate Samples used for maps.
         if (playerPrefs.Lessons < 5)
         {
             m_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
+            p_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
         }
         else
         {
             m_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
+            p_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
         }
 
-        mapManager.GetNextLevel(m_sample);
+        mapManager.GetNextLevel(m_sample, p_sample);
 
         SetScoreUI(0);
         SetLivesUI(maxLives);
@@ -258,10 +262,11 @@ public class GameManager : MonoBehaviour
         Debug.Log("out");
 
         playerPrefs.AssignPlayerPrefs(m_sample, newPlayerPrefValue);
+        playerPrefs.AssignPlayerPrefs(p_sample, newPlayerPrefValue);
         
         ask4Pref_UI.SetActive(false);
         gameOverText.enabled = false;
-        mapManager.GetNextLevel(m_sample);
+        mapManager.GetNextLevel(m_sample, p_sample);
         WaitForInput2StartNewLevel();
     }
 

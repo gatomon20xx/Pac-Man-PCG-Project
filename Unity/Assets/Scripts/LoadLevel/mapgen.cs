@@ -43,9 +43,9 @@ class Mapgen
 
     static Random rnd = new Random();
 
-    public static Map returnMap()
+    public static Map returnMap(double smallStop, double medStop, double largeStop, double topBot, double sizeTwo, double sizeFour, int maxPiece)
     {
-        genRandom();
+        genRandom(smallStop, medStop, largeStop, topBot, sizeTwo, sizeFour, maxPiece);
         Map map = new Map(28, 36, getTiles());
         return map;
     }
@@ -146,7 +146,7 @@ class Mapgen
         cell.connect[UP] = cell.connect[LEFT] = true;
     }
 
-    public static void genRandom()
+    public static void genRandom(double smallStop, double medStop, double largeStop, double topBot, double sizeTwo, double sizeFour, int maxPiece)
     {
         List<Cell> getLeftMostEmptyCells()
         {
@@ -226,7 +226,7 @@ class Mapgen
             }
         }
 
-        void gen()
+        void gen(double smallStop, double medStop, double largeStop, double topBot, double sizeTwo, double sizeFour, int maxPiece)
         {
             Cell cell;      // cell at the center of growth (open cells are chosen around this cell)
             Cell newCell = null;   // most recent cell filled
@@ -244,9 +244,9 @@ class Mapgen
             double[] probStopGrowingAtSize = { // probability of stopping growth at sizes...
                 0,      // size 0
                 0,      // size 1
-                0.10,   // size 2
-                0.5,    // size 3
-                0.75,   // size 4
+                smallStop,   // size 2
+                medStop,    // size 3
+                largeStop,   // size 4
                 1       // size 5
             };
 
@@ -254,13 +254,13 @@ class Mapgen
             // so keep count of those created.
             Dictionary<int, int> singleCount = new Dictionary<int, int>();
             singleCount[0] = singleCount[rows - 1] = 0;
-            double probTopAndBotSingleCellJoin = 0.35;
+            double probTopAndBotSingleCellJoin = topBot;
 
             // A count and limit of the number long pieces (i.e. an "L" of size 4 or "T" of size 5)
             int longPieces = 0;
-            int maxLongPieces = 1;
-            double probExtendAtSize2 = 1.0;
-            double probExtendAtSize3or4 = 0.5;
+            int maxLongPieces = maxPiece;
+            double probExtendAtSize2 = sizeTwo;
+            double probExtendAtSize3or4 = sizeFour;
 
             void fillCell(Cell cellIn)
             {
@@ -1189,7 +1189,7 @@ class Mapgen
         while (true)
         {
             reset();
-            gen();
+            gen(smallStop, medStop, largeStop, topBot, sizeTwo, sizeFour, maxPiece);
             genCount++;
             if (!isDesirable())
             {

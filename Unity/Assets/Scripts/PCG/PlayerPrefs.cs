@@ -19,7 +19,14 @@ public class PlayerPrefs
         // Create the list of features
         m_features = new List<Feature>() {
             new Feature("pellet_density", new FloatRange(new List<Tuple<float, float>>() { new Tuple<float, float>(0.1f, 1.0f) })),
-            new Feature("power_pellets", new FloatRange(0.025f, 0.4f))
+            new Feature("power_pellets", new FloatRange(0.025f, 0.4f)),
+            new Feature("small_stop", new FloatRange(new List<Tuple<float, float>>() { new Tuple<float, float>(0.1f, 0.75f) })),
+            new Feature("med_stop", new FloatRange(new List<Tuple<float, float>>() { new Tuple<float, float>(0.1f, 0.75f) })),
+            new Feature("large_stop", new FloatRange(new List<Tuple<float, float>>() { new Tuple<float, float>(0.1f, 0.75f) })),
+            new Feature("sizetwo_grow", new FloatRange(new List<Tuple<float, float>>() { new Tuple<float, float>(0.1f, 0.75f) })),
+            new Feature("sizefour_grow", new FloatRange(new List<Tuple<float, float>>() { new Tuple<float, float>(0.1f, 0.75f) })),
+            new Feature("topbot_mix", new FloatRange(new List<Tuple<float, float>>() { new Tuple<float, float>(0.1f, 0.75f) })),
+            new Feature("long_pieces", new IntRange(new List<Tuple<int, int>>() { new Tuple<int, int>(0, 4) }))
         };
 
         // Create the curator

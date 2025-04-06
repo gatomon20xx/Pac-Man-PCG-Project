@@ -56,6 +56,15 @@ public class PCG
         //// = 1- above
         //int regPelletDensity; // Seems unnecessary to track both. Gives same info.
 
+        public double smallStopMapGrowth;
+        public double medStopMapGrowth;
+        public double larStopMapGrowth;
+
+        public double sizeTwoMapExtend;
+        public double sizeFourMapExtend;
+        public double topAndBotMapJoin;
+        public int maxLongPieces;
+
         // TOTAL ghost count
         // public int ghostCount;
 
@@ -72,6 +81,15 @@ public class PCG
         public int totPellets;
         public int totRegPellets;
         public int totPowerPellets;
+
+        public double totSmallStop;
+        public double totMedStop;
+        public double totLargeStop;
+
+        public double totSizeTwo;
+        public double totSizeFour;
+        public double totTopBot;
+        public int totLongPieces;
 
         //public int totWalls;
         //public int totPortals;
@@ -96,7 +114,7 @@ public class PCG
 
     private void reinitializeMap()
     {
-        map = Mapgen.returnMap();
+        map = Mapgen.returnMap(mapValues.totSmallStop, mapValues.totMedStop, mapValues.totLargeStop, mapValues.totTopBot, mapValues.totSizeTwo, mapValues.totSizeFour, mapValues.totLongPieces);
         string mapShape = map.generateText();
 
         Debug.Log(BaseMapData.mapStringRaw);
@@ -288,7 +306,7 @@ public class PCG
         return returnMapFeatures;
     }
 
-    public MapFeatures CreateMapFromPCCSample(Sample sample)
+    public MapFeatures CreateMapFromPCCSample(Sample sample, Sample probsample)
     {
         MapFeatures returnMapFeatures = new MapFeatures();
 
@@ -297,6 +315,27 @@ public class PCG
 
         // tracked
         returnMapFeatures.powerPelletDensity = sample.GetSampleValue("power_pellets").Item2.floatVal;
+
+        // tracked
+        returnMapFeatures.smallStopMapGrowth = (double)probsample.GetSampleValue("small_stop").Item2.floatVal;
+
+        // tracked
+        returnMapFeatures.medStopMapGrowth = (double)probsample.GetSampleValue("med_stop").Item2.floatVal;
+
+        // tracked
+        returnMapFeatures.larStopMapGrowth = (double)probsample.GetSampleValue("large_stop").Item2.floatVal;
+
+        // tracked
+        returnMapFeatures.sizeTwoMapExtend = (double)probsample.GetSampleValue("sizetwo_grow").Item2.floatVal;
+
+        // tracked
+        returnMapFeatures.sizeFourMapExtend = (double)probsample.GetSampleValue("sizefour_grow").Item2.floatVal;
+
+        // tracked
+        returnMapFeatures.topAndBotMapJoin = (double)probsample.GetSampleValue("topbot_mix").Item2.floatVal;
+
+        // tracked
+        returnMapFeatures.maxLongPieces = probsample.GetSampleValue("long_pieces").Item2.intVal;
 
         // Not tracked -- ignore
         returnMapFeatures.rangePower2Power = new Vector2(UnityEngine.Random.Range(1.0f, 1.0f), UnityEngine.Random.Range(1.0f, 1.0f));
@@ -316,6 +355,14 @@ public class PCG
         mapValues.totPellets = Math.Clamp((int)(MapRules.totSpacesRange[1] * mapFeatures.totPelletDensity), MapRules.totPelletsRange[0], MapRules.totPelletsRange[1]);       
         mapValues.totPowerPellets = Math.Clamp((int)(mapValues.totPellets * mapFeatures.powerPelletDensity), 0, MapRules.totPelletsRange[1]);
         mapValues.totRegPellets = mapValues.totPellets - mapValues.totPowerPellets;
+
+        mapValues.totSmallStop = mapFeatures.smallStopMapGrowth;
+        mapValues.totMedStop = mapFeatures.medStopMapGrowth;
+        mapValues.totLargeStop = mapFeatures.larStopMapGrowth;
+        mapValues.totSizeTwo = mapFeatures.sizeTwoMapExtend;
+        mapValues.totSizeFour = mapFeatures.sizeFourMapExtend;
+        mapValues.totTopBot = mapFeatures.topAndBotMapJoin;
+        mapValues.totLongPieces = mapFeatures.maxLongPieces;
 
         //mapValues.rangePower2Power.x = mapFeatures.rangePower2Power;
     }
