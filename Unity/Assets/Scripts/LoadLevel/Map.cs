@@ -286,23 +286,34 @@ class Map
             for (x = 0; x < this.numCols; x++)
             {
                 var t = this.getTile(x, y);
-                if (t == 'o' || t == '.' || t == ' ')
+                if (x >= 11 && x <= 16 && y >= 16 && y <= 18)
                 {
-                    if (x == 0 || x == this.numCols - 1)
-                    {
-                        text = text + 'w';
-                    }
-                    else
-                        text = text + '.';
-
+                    text = text + 'g';
                 }
-                else if (t == '|')
+                else if (x >= 13 && x <= 14 && y == 15)
                 {
-                    text = text + '|';
+                    text = text + 'e';
                 }
                 else
                 {
-                    text = text + ' ';
+                    if (t == 'o' || t == '.' || t == ' ')
+                    {
+                        if (x == 0 || x == this.numCols - 1)
+                        {
+                            text = text + 'w';
+                        }
+                        else
+                            text = text + '.';
+
+                    }
+                    else if (t == '|')
+                    {
+                        text = text + '|';
+                    }
+                    else
+                    {
+                        text = text + '|';
+                    }
                 }
                 //if (t==' ') {
                 //    text = text + ' ';

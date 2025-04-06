@@ -96,12 +96,20 @@ public class PCG
         Debug.Log(BaseMapData.mapStringRaw);
 
         //Replace all instances of pellets.
+
+        BaseMapData.mapStringRaw = mapShape;
+
         BaseMapStringRaw = BaseMapData.mapStringRaw.Replace('.', ' ');
         BaseMapStringRaw = BaseMapStringRaw.Replace('o', ' ');
         BaseMapStringRaw = BaseMapStringRaw.Replace('-', '|');
         BaseMapStringRaw = BaseMapStringRaw.Replace('e', '|');
 
-        BaseMapStringArray = BaseMapStringRaw.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+        Debug.Log(BaseMapData.mapStringRaw);
+
+        BaseMapStringArray = BaseMapStringRaw.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+        Debug.Log(BaseMapStringArray);
+
 
         baseStringBuilderArray = new();
         for (int row = 0; row < BaseMapStringArray.Length; row++)
@@ -136,7 +144,7 @@ public class PCG
 
         // This should be a deep copy
         List<StringBuilder> newMapStringBuilderList = BaseMapStringArray.Select(s => new StringBuilder(string.Copy(s))).ToList();
-        Debug.Log(BaseMapStringRaw);
+        Debug.Log(BaseMapStringArray);
         // THIS DOES NOT WORK... it's a ref copy 
         //List<StringBuilder> newMapStringBuilderList = new(BaseMapStringArray);
 
