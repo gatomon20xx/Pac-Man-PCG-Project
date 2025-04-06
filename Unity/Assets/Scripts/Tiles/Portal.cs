@@ -12,11 +12,12 @@ public class Portal : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        collision.transform.position = new Vector3(this.portalExit.transform.position.x, this.portalExit.transform.position.y, collision.transform.position.z);
+        collision.transform.position = new Vector3(Mathf.Sign(collision.transform.position.x) * -13, collision.transform.position.y, collision.transform.position.z);
+        Debug.Log("In collision");
         GameObject go = collision.gameObject;
 
         Movement movement = go.GetComponent<Movement>();
         if (movement != null)
-            movement.SetDirection(portalExit.exitTrajectory, true);
+            movement.SetDirection(new Vector2(movement.direction.x, 0), true);
     }
 }

@@ -34,11 +34,13 @@ public class MapManager : MonoBehaviour
     
     // CANNOT be walls
     public Tilemap pellets;
+    public Tilemap turnNodes;
     
     // CANNOT be walls. 
     // CAN be drawn over pellets
     // portals, ghost home inside/outside
     public Tilemap specialNodes;
+
 
     // TILES
     //======
@@ -47,6 +49,7 @@ public class MapManager : MonoBehaviour
     public TileBase tileWall;
     public TileBase tilePortal;
     public TileBase tilePortalExit;
+    public TileBase tileTurnNode;
 
     public List<MapData> _maps;
 
@@ -165,6 +168,11 @@ public class MapManager : MonoBehaviour
         TileBase setTile = null;
         Vector3Int newTilePos;
 
+        char tileLeft;
+        char tileRight;
+        char tileDown;
+        char tileUp;
+
         TileBase currentTileWall = null;
         //TileBase currentTilePellet = null;
         //TileBase currentTile = null;
@@ -198,6 +206,9 @@ public class MapManager : MonoBehaviour
                     case ' ':
                         setTile = null;
                         break;
+                    case 'w':
+                        setTile = tilePortal;
+                        break;
                     default:
                         break;
                 }
@@ -205,8 +216,45 @@ public class MapManager : MonoBehaviour
                 {
                     walls.SetTile(newTilePos, setTile);
                 }
+                else if (setTile == tilePortal)
+                {
+                    if (col > mapStringsArray[row].Length / 2)
+                    {
+                        specialNodes.SetTile(this.GetTileWorldPosFromRowCol(row, col + 1), setTile);
+                    }
+                    else
+                    {
+                        specialNodes.SetTile(this.GetTileWorldPosFromRowCol(row, col - 1), setTile);
+                    }
+                }
                 else
+                {
                     pellets.SetTile(newTilePos, setTile);
+                }
+            }
+            row++;
+        }
+
+        row = 0;
+        foreach (var rowString in mapStringsArray)
+        {
+            for (int col = 0; col < mapStringsArray[row].Length; col++)
+            {
+                newTilePos = this.GetTileWorldPosFromRowCol(row, col);
+
+                // Make sure that within bounds, the nodes are placed properly.
+                if (col > 0 && col < mapStringsArray[row].Length - 1 && row > 0 && row < mapStringsArray.Length - 1)
+                {
+                    tileLeft = mapStringsArray[row - 1][col];
+                    tileRight = mapStringsArray[row + 1][col];
+                    tileDown = mapStringsArray[row][col + 1];
+                    tileUp = mapStringsArray[row][col - 1];
+                    if ((tileLeft == ' ' || tileRight == ' ' || tileLeft == '.' || tileRight == '.' || tileLeft == 'o' || tileRight == 'o') &&
+                        (tileUp == ' ' || tileDown == ' ' || tileUp == '.' || tileDown == '.' || tileUp == 'o' || tileDown == 'o'))
+                    {
+                        turnNodes.SetTile(newTilePos, tileTurnNode);
+                    }
+                }
             }
             row++;
         }

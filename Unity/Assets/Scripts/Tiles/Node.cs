@@ -29,4 +29,15 @@ public class Node : MonoBehaviour
             availableDirections.Add(direction);
         }
     }
+
+    public void Reset()
+    {
+        // Since our mazes are made dynamically, we need to be able to reset our nodes whenever a new maze is made.
+        availableDirections.Clear();
+
+        CheckAvailableDirection(Vector2.up);
+        CheckAvailableDirection(Vector2.down);
+        CheckAvailableDirection(Vector2.left);
+        CheckAvailableDirection(Vector2.right);
+    }
 }
