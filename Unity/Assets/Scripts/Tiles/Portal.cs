@@ -13,7 +13,7 @@ public class Portal : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         collision.transform.position = new Vector3(Mathf.Sign(collision.transform.position.x) * -13, collision.transform.position.y, collision.transform.position.z);
-        Debug.Log("In collision");
+        Debug.Log(collision.transform.position.x);
         GameObject go = collision.gameObject;
 
         Movement movement = go.GetComponent<Movement>();

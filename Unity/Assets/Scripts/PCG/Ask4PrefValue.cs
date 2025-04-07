@@ -10,8 +10,12 @@ public static class Ask4PrefValue
     {
         return i_keyCode switch
         {
-            KeyCode.Alpha1 => prefValues[0],
-            KeyCode.Alpha6 => prefValues[5],
+            KeyCode.Alpha5 => prefValues[0],
+            KeyCode.Alpha4 => prefValues[1],
+            KeyCode.Alpha3 => prefValues[2],
+            KeyCode.Alpha2 => prefValues[3],
+            KeyCode.Alpha1 => prefValues[4],
+            KeyCode.Alpha0 => prefValues[5],
             _ => float.NaN
         };
     }
