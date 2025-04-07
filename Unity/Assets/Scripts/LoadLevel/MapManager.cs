@@ -50,6 +50,7 @@ public class MapManager : MonoBehaviour
     public TileBase tilePortal;
     public TileBase tilePortalExit;
     public TileBase tileTurnNode;
+    public TileBase tileFruit;
 
     public List<MapData> _maps;
 
@@ -177,7 +178,17 @@ public class MapManager : MonoBehaviour
         return true;
     }
 
-
+    public void addFruit()
+    {
+        string[] mapStringsArray = _maps[currentMapIndex].mapStringSplit;
+        int row = UnityEngine.Random.Range(1, mapStringsArray.Length - 1);
+        int col = UnityEngine.Random.Range(1, mapStringsArray[0].Length - 1);
+        Vector3Int newTilePos = this.GetTileWorldPosFromRowCol(row, col);
+        if (mapStringsArray[row][col] == ' ' || mapStringsArray[row][col] == '.' || mapStringsArray[row][col] == 'o')
+        {
+            specialNodes.SetTile(newTilePos, tileFruit);
+        }
+    }
 
     private void DrawCurrentMap()
     {

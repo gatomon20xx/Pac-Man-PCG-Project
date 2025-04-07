@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour
     private PCC.ContentRepresentation.Sample.Sample pel_sample;
     // Player Preference
 
+    private float fruitChance = 0.2f;
+
     public KeyCode keyCode_9 = KeyCode.Alpha9;
     public KeyCode keyCode_8 = KeyCode.Alpha8;
     public KeyCode keyCode_7 = KeyCode.Alpha7;
@@ -253,6 +255,23 @@ public class GameManager : MonoBehaviour
             TimeForNewLevel();
             //Invoke(nameof(NewRound), time2LoadNewRound);
         }
+        else
+        {
+            if(UnityEngine.Random.Range(0f, 1f) < fruitChance)
+            {
+                mapManager.addFruit();
+                Debug.Log("fruit!");
+            }
+        }
+    }
+
+    //PATTERN, UPDATE: use events
+    public void FruitEaten(Fruit fruit)
+    {
+        fruit.gameObject.SetActive(false);
+        Debug.Log("eat!");
+
+        SetScoreUI(this.score + fruit.points);
     }
 
     private void TimeForNewLevel()
