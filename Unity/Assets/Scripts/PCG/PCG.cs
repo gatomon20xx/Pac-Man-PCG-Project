@@ -117,7 +117,7 @@ public class PCG
         map = Mapgen.returnMap(mapValues.totSmallStop, mapValues.totMedStop, mapValues.totLargeStop, mapValues.totTopBot, mapValues.totSizeTwo, mapValues.totSizeFour, mapValues.totLongPieces);
         string mapShape = map.generateText();
 
-        Debug.Log(BaseMapData.mapStringRaw);
+        // Debug.Log(BaseMapData.mapStringRaw);
 
         //Replace all instances of pellets.
 
@@ -128,11 +128,11 @@ public class PCG
         BaseMapStringRaw = BaseMapStringRaw.Replace('-', '|');
         BaseMapStringRaw = BaseMapStringRaw.Replace('e', '|');
 
-        Debug.Log(BaseMapData.mapStringRaw);
+        // Debug.Log(BaseMapData.mapStringRaw);
 
         BaseMapStringArray = BaseMapStringRaw.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
-        Debug.Log(BaseMapStringArray);
+        // Debug.Log(BaseMapStringArray);
 
 
         baseStringBuilderArray = new();

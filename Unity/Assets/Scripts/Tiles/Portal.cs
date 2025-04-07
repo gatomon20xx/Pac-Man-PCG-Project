@@ -12,8 +12,8 @@ public class Portal : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        collision.transform.position = new Vector3(Mathf.Sign(collision.transform.position.x) * -13, collision.transform.position.y, collision.transform.position.z);
         Debug.Log(collision.transform.position.x);
+        collision.transform.position = new Vector3(Mathf.Sign(collision.transform.position.x - 13.1f) * -13, collision.transform.position.y, collision.transform.position.z);
         GameObject go = collision.gameObject;
 
         Movement movement = go.GetComponent<Movement>();

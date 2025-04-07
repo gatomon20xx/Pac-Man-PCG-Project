@@ -282,7 +282,7 @@ public class GameManager : MonoBehaviour
 
         while (!isPrefSet)
         {
-            Debug.Log("in");
+            // Debug.Log("in");
 
             // Using if, else if on purpose --- can't make more than one selection!
             if (Input.GetKeyDown(keyCode_9))
