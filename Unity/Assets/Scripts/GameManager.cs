@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     public GameObject ask4Pref_UI;
     public GameObject ask4PowPref_UI;
     public GameObject ask4MapPref_UI;
+    public GameObject ask4FruitPref_UI;
 
     public MapManager mapManager;
     
@@ -30,6 +31,7 @@ public class GameManager : MonoBehaviour
     private PlayerPrefs playerPrefs = new PlayerPrefs();
     private PCC.ContentRepresentation.Sample.Sample m_sample;
     private PCC.ContentRepresentation.Sample.Sample p_sample;
+    private PCC.ContentRepresentation.Sample.Sample f_sample;
     private PCC.ContentRepresentation.Sample.Sample pel_sample;
     // Player Preference
 
@@ -76,6 +78,7 @@ public class GameManager : MonoBehaviour
         ask4Pref_UI.SetActive(false);
         ask4PowPref_UI.SetActive(false);
         ask4MapPref_UI.SetActive(false);
+        ask4FruitPref_UI.SetActive(false);
         gameOverText.enabled = false;
         for (int i = 0; i < this.ghosts.Length; i++)
         {
@@ -142,15 +145,18 @@ public class GameManager : MonoBehaviour
             m_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
             pel_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
             p_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
+            f_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
         }
         else
         {
             m_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
             pel_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
             p_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
+            f_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
         }
 
         mapManager.GetNextLevel(m_sample, pel_sample, p_sample);
+        fruitChance = f_sample.GetSampleValue("fruit_chance").Item2.floatVal;
 
         SetScoreUI(0);
         SetLivesUI(maxLives);
@@ -294,10 +300,12 @@ public class GameManager : MonoBehaviour
         bool isPrefSet = false;
         bool isPelSet = false;
         bool isNextPrefSet = false;
+        bool isFruitSet = false;
 
         float newPlayerPrefValue = 0;
         float newPowPrefValue = 0;
         float newMapPrefValue = 0;
+        float newFruitPrefValue = 0.01f;
 
         while (!isPrefSet)
         {
@@ -509,16 +517,88 @@ public class GameManager : MonoBehaviour
 
             yield return null;
         }
+        File.AppendAllText(filename, "Map Layout: " + newPlayerPrefValue.ToString() + Environment.NewLine);
+        ask4MapPref_UI.SetActive(false);
+        ask4FruitPref_UI.SetActive(true);
+        while (!isFruitSet)
+        {
+            Debug.Log("in");
 
-        File.AppendAllText(filename, "Map Layout: " + newMapPrefValue.ToString() + Environment.NewLine);
+            // Using if, else if on purpose --- can't make more than one selection!
+            if (Input.GetKeyDown(keyCode_9))
+            {
+                Debug.Log("love");
+                newFruitPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha9);
+                isFruitSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_8))
+            {
+                Debug.Log("really love");
+                newFruitPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha8);
+                isFruitSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_7))
+            {
+                Debug.Log("like");
+                newFruitPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha7);
+                isFruitSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_6))
+            {
+                Debug.Log("alright");
+                newFruitPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha6);
+                isFruitSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_5))
+            {
+                Debug.Log("dislike");
+                newFruitPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha5);
+                isFruitSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_4))
+            {
+                Debug.Log("really love");
+                newFruitPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha4);
+                isFruitSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_3))
+            {
+                Debug.Log("like");
+                newFruitPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha3);
+                isFruitSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_2))
+            {
+                Debug.Log("alright");
+                newFruitPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha2);
+                isFruitSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_1))
+            {
+                Debug.Log("dislike");
+                newFruitPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha1);
+                isFruitSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_0))
+            {
+                Debug.Log("hate");
+                newFruitPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha0);
+                isFruitSet = true;
+            }
+
+            yield return null;
+        }
+
+        File.AppendAllText(filename, "Fruit Frequency: " + newMapPrefValue.ToString() + Environment.NewLine);
 
         Debug.Log("out");
 
         playerPrefs.AssignPlayerPrefs(m_sample, newPlayerPrefValue);
         playerPrefs.AssignPlayerPrefs(pel_sample, newPowPrefValue);
         playerPrefs.AssignPlayerPrefs(p_sample, newMapPrefValue);
+        playerPrefs.AssignPlayerPrefs(f_sample, newFruitPrefValue);
         
-        ask4MapPref_UI.SetActive(false);
+        ask4FruitPref_UI.SetActive(false);
         gameOverText.enabled = false;
         NewLevel();
         WaitForInput2StartNewLevel();
