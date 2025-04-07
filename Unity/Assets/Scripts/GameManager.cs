@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     public TMP_Text livesText;
 
     public GameObject ask4Pref_UI;
+    public GameObject ask4PowPref_UI;
     public GameObject ask4MapPref_UI;
 
     public MapManager mapManager;
@@ -29,14 +30,19 @@ public class GameManager : MonoBehaviour
     private PlayerPrefs playerPrefs = new PlayerPrefs();
     private PCC.ContentRepresentation.Sample.Sample m_sample;
     private PCC.ContentRepresentation.Sample.Sample p_sample;
+    private PCC.ContentRepresentation.Sample.Sample pel_sample;
     // Player Preference
 
-    public KeyCode keyCode_Love = KeyCode.Alpha5;
-    public KeyCode keyCode_ReallyLike = KeyCode.Alpha4;
-    public KeyCode keyCode_Like = KeyCode.Alpha3;
-    public KeyCode keyCode_Alright = KeyCode.Alpha2;
-    public KeyCode keyCode_Bad = KeyCode.Alpha1;
-    public KeyCode keyCode_Hate = KeyCode.Alpha0;
+    public KeyCode keyCode_9 = KeyCode.Alpha9;
+    public KeyCode keyCode_8 = KeyCode.Alpha8;
+    public KeyCode keyCode_7 = KeyCode.Alpha7;
+    public KeyCode keyCode_6 = KeyCode.Alpha6;
+    public KeyCode keyCode_5 = KeyCode.Alpha5;
+    public KeyCode keyCode_4 = KeyCode.Alpha4;
+    public KeyCode keyCode_3 = KeyCode.Alpha3;
+    public KeyCode keyCode_2 = KeyCode.Alpha2;
+    public KeyCode keyCode_1 = KeyCode.Alpha1;
+    public KeyCode keyCode_0 = KeyCode.Alpha0;
 
 
     public int ghostMultiplier { get; private set; } = 1;
@@ -46,6 +52,8 @@ public class GameManager : MonoBehaviour
     //public static int lives = 3;
 
     public int maxLives = 1;
+
+    bool firstDone = false;
 
     public static float time2Respawn = 1.5f;
     public static float time2LoadNewRound = 2.0f;
@@ -64,6 +72,7 @@ public class GameManager : MonoBehaviour
         //NewGame();
 
         ask4Pref_UI.SetActive(false);
+        ask4PowPref_UI.SetActive(false);
         ask4MapPref_UI.SetActive(false);
         gameOverText.enabled = false;
         for (int i = 0; i < this.ghosts.Length; i++)
@@ -97,11 +106,21 @@ public class GameManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 startNewLevel = true;
-                NewLevel();
+                if (firstDone == false)
+                {
+                    NewLevel();
+                    firstDone = true;
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                TimeForNewLevel();
+                firstDone = true;
             }
             yield return null;
         }
 
+        NewRound();
         startLevelOverText.enabled = false;
         yield return null;
     }
@@ -119,20 +138,21 @@ public class GameManager : MonoBehaviour
         if (playerPrefs.Lessons < 5)
         {
             m_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
+            pel_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
             p_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
         }
         else
         {
             m_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
+            pel_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
             p_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
         }
 
-        mapManager.GetNextLevel(m_sample, p_sample);
+        mapManager.GetNextLevel(m_sample, pel_sample, p_sample);
 
         SetScoreUI(0);
         SetLivesUI(maxLives);
         
-        NewRound();
     }
 
     //PCG: this function sets the pellets active
@@ -253,9 +273,11 @@ public class GameManager : MonoBehaviour
         }
 
         bool isPrefSet = false;
+        bool isPelSet = false;
         bool isNextPrefSet = false;
 
         float newPlayerPrefValue = 0;
+        float newPowPrefValue = 0;
         float newMapPrefValue = 0;
 
         while (!isPrefSet)
@@ -263,37 +285,61 @@ public class GameManager : MonoBehaviour
             Debug.Log("in");
 
             // Using if, else if on purpose --- can't make more than one selection!
-            if (Input.GetKeyDown(keyCode_Love))
+            if (Input.GetKeyDown(keyCode_9))
             {
                 Debug.Log("love");
+                newPlayerPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha9);
+                isPrefSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_8))
+            {
+                Debug.Log("really love");
+                newPlayerPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha8);
+                isPrefSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_7))
+            {
+                Debug.Log("like");
+                newPlayerPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha7);
+                isPrefSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_6))
+            {
+                Debug.Log("alright");
+                newPlayerPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha6);
+                isPrefSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_5))
+            {
+                Debug.Log("dislike");
                 newPlayerPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha5);
                 isPrefSet = true;
             }
-            else if (Input.GetKeyDown(keyCode_ReallyLike))
+            else if (Input.GetKeyDown(keyCode_4))
             {
                 Debug.Log("really love");
                 newPlayerPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha4);
                 isPrefSet = true;
             }
-            else if (Input.GetKeyDown(keyCode_Like))
+            else if (Input.GetKeyDown(keyCode_3))
             {
                 Debug.Log("like");
                 newPlayerPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha3);
                 isPrefSet = true;
             }
-            else if (Input.GetKeyDown(keyCode_Alright))
+            else if (Input.GetKeyDown(keyCode_2))
             {
                 Debug.Log("alright");
                 newPlayerPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha2);
                 isPrefSet = true;
             }
-            else if (Input.GetKeyDown(keyCode_Bad))
+            else if (Input.GetKeyDown(keyCode_1))
             {
                 Debug.Log("dislike");
                 newPlayerPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha1);
                 isPrefSet = true;
             }
-            else if (Input.GetKeyDown(keyCode_Hate))
+            else if (Input.GetKeyDown(keyCode_0))
             {
                 Debug.Log("hate");
                 newPlayerPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha0);
@@ -304,43 +350,138 @@ public class GameManager : MonoBehaviour
         }
         File.AppendAllText(filename, "Pellet Arrangement: " + newPlayerPrefValue.ToString() + Environment.NewLine);
         ask4Pref_UI.SetActive(false);
+        ask4PowPref_UI.SetActive(true);
+        while (!isPelSet)
+        {
+            Debug.Log("in");
+
+            // Using if, else if on purpose --- can't make more than one selection!
+            if (Input.GetKeyDown(keyCode_9))
+            {
+                Debug.Log("love");
+                newPowPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha9);
+                isPelSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_8))
+            {
+                Debug.Log("really love");
+                newPowPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha8);
+                isPelSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_7))
+            {
+                Debug.Log("like");
+                newPowPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha7);
+                isPelSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_6))
+            {
+                Debug.Log("alright");
+                newPowPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha6);
+                isPelSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_5))
+            {
+                Debug.Log("dislike");
+                newPowPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha5);
+                isPelSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_4))
+            {
+                Debug.Log("really love");
+                newPowPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha4);
+                isPelSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_3))
+            {
+                Debug.Log("like");
+                newPowPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha3);
+                isPelSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_2))
+            {
+                Debug.Log("alright");
+                newPowPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha2);
+                isPelSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_1))
+            {
+                Debug.Log("dislike");
+                newPowPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha1);
+                isPelSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_0))
+            {
+                Debug.Log("hate");
+                newPowPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha0);
+                isPelSet = true;
+            }
+
+            yield return null;
+        }
+        File.AppendAllText(filename, "Power Density: " + newPlayerPrefValue.ToString() + Environment.NewLine);
+        ask4PowPref_UI.SetActive(false);
         ask4MapPref_UI.SetActive(true);
         while (!isNextPrefSet)
         {
             Debug.Log("in");
 
             // Using if, else if on purpose --- can't make more than one selection!
-            if (Input.GetKeyDown(keyCode_Love))
+            if (Input.GetKeyDown(keyCode_9))
             {
                 Debug.Log("love");
+                newMapPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha9);
+                isNextPrefSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_8))
+            {
+                Debug.Log("really love");
+                newMapPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha8);
+                isNextPrefSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_7))
+            {
+                Debug.Log("like");
+                newMapPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha7);
+                isNextPrefSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_6))
+            {
+                Debug.Log("alright");
+                newMapPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha6);
+                isNextPrefSet = true;
+            }
+            else if (Input.GetKeyDown(keyCode_5))
+            {
+                Debug.Log("dislike");
                 newMapPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha5);
                 isNextPrefSet = true;
             }
-            else if (Input.GetKeyDown(keyCode_ReallyLike))
+            else if (Input.GetKeyDown(keyCode_4))
             {
                 Debug.Log("really love");
                 newMapPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha4);
                 isNextPrefSet = true;
             }
-            else if (Input.GetKeyDown(keyCode_Like))
+            else if (Input.GetKeyDown(keyCode_3))
             {
                 Debug.Log("like");
                 newMapPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha3);
                 isNextPrefSet = true;
             }
-            else if (Input.GetKeyDown(keyCode_Alright))
+            else if (Input.GetKeyDown(keyCode_2))
             {
                 Debug.Log("alright");
                 newMapPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha2);
                 isNextPrefSet = true;
             }
-            else if (Input.GetKeyDown(keyCode_Bad))
+            else if (Input.GetKeyDown(keyCode_1))
             {
                 Debug.Log("dislike");
                 newMapPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha1);
                 isNextPrefSet = true;
             }
-            else if (Input.GetKeyDown(keyCode_Hate))
+            else if (Input.GetKeyDown(keyCode_0))
             {
                 Debug.Log("hate");
                 newMapPrefValue = Ask4PrefValue.GetPrefValueFromKey(KeyCode.Alpha0);
@@ -355,11 +496,12 @@ public class GameManager : MonoBehaviour
         Debug.Log("out");
 
         playerPrefs.AssignPlayerPrefs(m_sample, newPlayerPrefValue);
+        playerPrefs.AssignPlayerPrefs(pel_sample, newPowPrefValue);
         playerPrefs.AssignPlayerPrefs(p_sample, newMapPrefValue);
         
         ask4MapPref_UI.SetActive(false);
         gameOverText.enabled = false;
-        mapManager.GetNextLevel(m_sample, p_sample);
+        NewLevel();
         WaitForInput2StartNewLevel();
     }
 

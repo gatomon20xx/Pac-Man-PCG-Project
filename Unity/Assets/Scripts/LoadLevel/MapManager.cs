@@ -109,7 +109,7 @@ public class MapManager : MonoBehaviour
         }
     }
 
-    public void GetNextLevel(Sample sample = null, Sample probsample = null)
+    public void GetNextLevel(Sample sample = null, Sample powsample = null, Sample probsample = null)
     {
         bool pcgMapWorked = false;
 
@@ -119,9 +119,9 @@ public class MapManager : MonoBehaviour
             if (pcgMapWorked)
                 return;
         }
-        else if(isLoadingNewMapsViaPCG && sample != null && probsample != null)
+        else if(isLoadingNewMapsViaPCG && sample != null && powsample != null && probsample != null)
         {
-            pcgMapWorked = LoadAndDrawPCGMap(pcg.GenerateMap(pcg.CreateMapFromPCCSample(sample, probsample)));
+            pcgMapWorked = LoadAndDrawPCGMap(pcg.GenerateMap(pcg.CreateMapFromPCCSample(sample, powsample, probsample)));
             if (pcgMapWorked)
                 return;
         }

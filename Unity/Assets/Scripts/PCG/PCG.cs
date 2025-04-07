@@ -306,7 +306,7 @@ public class PCG
         return returnMapFeatures;
     }
 
-    public MapFeatures CreateMapFromPCCSample(Sample sample, Sample probsample)
+    public MapFeatures CreateMapFromPCCSample(Sample sample, Sample powsample, Sample probsample)
     {
         MapFeatures returnMapFeatures = new MapFeatures();
 
@@ -314,7 +314,7 @@ public class PCG
         returnMapFeatures.totPelletDensity = sample.GetSampleValue("pellet_density").Item2.floatVal;
 
         // tracked
-        returnMapFeatures.powerPelletDensity = sample.GetSampleValue("power_pellets").Item2.floatVal;
+        returnMapFeatures.powerPelletDensity = powsample.GetSampleValue("power_pellets").Item2.floatVal;
 
         // tracked
         returnMapFeatures.smallStopMapGrowth = (double)probsample.GetSampleValue("small_stop").Item2.floatVal;
