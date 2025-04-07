@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 using TMPro;
 using PCC.CurationMethod;
-using UnityEditor.PackageManager.UI;
+// using UnityEditor.PackageManager.UI;
 using System;
 
 public class GameManager : MonoBehaviour
