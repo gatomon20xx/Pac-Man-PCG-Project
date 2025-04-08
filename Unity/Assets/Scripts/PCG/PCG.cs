@@ -196,8 +196,8 @@ public class PCG
             //borders are walls or warps. Cannot be pellets.
             int randCol = UnityEngine.Random.Range(col, newRow.Length-2);
 
-            Debug.Log($"newRow {newMapStringBuilderList}\n");
-            Debug.Log($"col: {col}\n newRow.Length-2: {newRow.Length - 2}");
+            // Debug.Log($"newRow {newMapStringBuilderList}\n");
+            // Debug.Log($"col: {col}\n newRow.Length-2: {newRow.Length - 2}");
 
             while (newRow[randCol] != space)
             {
@@ -297,6 +297,27 @@ public class PCG
 
         // = pow/spaces
         returnMapFeatures.powerPelletDensity = UnityEngine.Random.Range(0.0f, 1.0f);
+
+        // tracked
+        returnMapFeatures.smallStopMapGrowth = UnityEngine.Random.Range(0.1f, 0.75f);
+
+        // tracked
+        returnMapFeatures.medStopMapGrowth = UnityEngine.Random.Range(0.1f, 0.75f);
+
+        // tracked
+        returnMapFeatures.larStopMapGrowth = UnityEngine.Random.Range(0.1f, 0.75f);
+
+        // tracked
+        returnMapFeatures.sizeTwoMapExtend = UnityEngine.Random.Range(0.1f, 0.75f);
+
+        // tracked
+        returnMapFeatures.sizeFourMapExtend = UnityEngine.Random.Range(0.1f, 0.75f);
+
+        // tracked
+        returnMapFeatures.topAndBotMapJoin = UnityEngine.Random.Range(0.1f, 0.75f);
+
+        // tracked
+        returnMapFeatures.maxLongPieces = UnityEngine.Random.Range(0, 4);
 
         returnMapFeatures.rangePower2Power = new Vector2(UnityEngine.Random.Range(1.0f, 1.0f), UnityEngine.Random.Range(1.0f, 1.0f));
 

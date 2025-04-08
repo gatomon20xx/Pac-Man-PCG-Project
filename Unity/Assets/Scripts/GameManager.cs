@@ -25,6 +25,8 @@ public class GameManager : MonoBehaviour
     public GameObject ask4MapPref_UI;
     public GameObject ask4FruitPref_UI;
 
+    bool isRandom = true;
+
     public MapManager mapManager;
     
     // Player Preference
@@ -69,6 +71,7 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         // Load your pre-trained data here, if desired
+        File.AppendAllText(filename, "This is " + isRandom.ToString() + Environment.NewLine);
     }
 
     private void Start()
@@ -119,6 +122,10 @@ public class GameManager : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.R))
             {
+                m_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
+                pel_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
+                p_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
+                f_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
                 TimeForNewLevel();
                 firstDone = true;
             }
@@ -155,8 +162,16 @@ public class GameManager : MonoBehaviour
             f_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
         }
 
-        mapManager.GetNextLevel(m_sample, pel_sample, p_sample);
-        fruitChance = f_sample.GetSampleValue("fruit_chance").Item2.floatVal;
+        mapManager.GetNextLevel(m_sample, pel_sample, p_sample, isRandom);
+
+        if (isRandom)
+        {
+            fruitChance = UnityEngine.Random.Range(0.01f, 0.15f);
+        }
+        else
+        {
+            fruitChance = f_sample.GetSampleValue("fruit_chance").Item2.floatVal;
+        }
 
         SetScoreUI(0);
         SetLivesUI(maxLives);
@@ -451,7 +466,7 @@ public class GameManager : MonoBehaviour
         ask4MapPref_UI.SetActive(true);
         while (!isNextPrefSet)
         {
-            Debug.Log("in");
+            // Debug.Log("in");
 
             // Using if, else if on purpose --- can't make more than one selection!
             if (Input.GetKeyDown(keyCode_9))

@@ -99,7 +99,7 @@ public class MapManager : MonoBehaviour
                 newTilePos = this.GetTileWorldPosFromRowCol(row, col);
                 if (!(row >= 12 && row <= 16 && col >= 10 && col <= 17))
                 {
-                    Debug.Log("Space cleared");
+                    // Debug.Log("Space cleared");
                     walls.SetTile(newTilePos, null);
                     turnNodes.SetTile(newTilePos, null);
                     specialNodes.SetTile(newTilePos, null);
@@ -110,18 +110,20 @@ public class MapManager : MonoBehaviour
         }
     }
 
-    public void GetNextLevel(Sample sample = null, Sample powsample = null, Sample probsample = null)
+    public void GetNextLevel(Sample sample = null, Sample powsample = null, Sample probsample = null, bool isRandom = false)
     {
         bool pcgMapWorked = false;
 
-        if (isLoadingNewMapsViaPCG && (sample == null || probsample == null))
+        if (isRandom)
         {
+            // Debug.Log("Random");
             pcgMapWorked = LoadAndDrawPCGMap(pcg.GenerateMap( pcg.CreateRandomizedMapFeatures() ));
             if (pcgMapWorked)
                 return;
         }
         else if(isLoadingNewMapsViaPCG && sample != null && powsample != null && probsample != null)
         {
+            // Debug.Log("Not Random");
             pcgMapWorked = LoadAndDrawPCGMap(pcg.GenerateMap(pcg.CreateMapFromPCCSample(sample, powsample, probsample)));
             if (pcgMapWorked)
                 return;

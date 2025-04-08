@@ -2210,6 +2210,7 @@ MonoBehaviour:
   ask4Pref_UI: {fileID: 1454580961}
   ask4PowPref_UI: {fileID: 1675426696}
   ask4MapPref_UI: {fileID: 1490579073}
+  ask4FruitPref_UI: {fileID: 506687154}
   mapManager: {fileID: 1669361348}
   keyCode_9: 57
   keyCode_8: 56
@@ -2221,7 +2222,7 @@ MonoBehaviour:
   keyCode_2: 50
   keyCode_1: 49
   keyCode_0: 48
-  maxLives: 1
+  maxLives: 2
 --- !u!1 &973324765
 GameObject:
   m_ObjectHideFlags: 0

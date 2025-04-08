@@ -49,7 +49,7 @@ public class PlayerPrefs
         // Cast to an int
         m_BRSCurator.RecordSample(sample, (int)i_newPlayerPref);
 
-        if (Lessons < 5)
+        if (Lessons < 20)
             Lessons++;
     }
 }
