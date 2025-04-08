@@ -6,6 +6,7 @@ using TMPro;
 using PCC.CurationMethod;
 // using UnityEditor.PackageManager.UI;
 using System;
+using Unity.VisualScripting;
 
 public class GameManager : MonoBehaviour
 {
@@ -66,12 +67,14 @@ public class GameManager : MonoBehaviour
 
     public static int Level = 0;
 
-    string filename = "RecordedResponses.txt";
+    string filename;
 
     private void Awake()
     {
         // Load your pre-trained data here, if desired
-        File.AppendAllText(filename, "This is " + isRandom.ToString() + Environment.NewLine);
+        filename = Application.persistentDataPath + "RecordedResponses.txt";
+
+        File.AppendAllText(filename, "Results of Testing" + Environment.NewLine + "This is " + isRandom.ToString() + Environment.NewLine);
     }
 
     private void Start()
@@ -128,6 +131,11 @@ public class GameManager : MonoBehaviour
                 f_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
                 TimeForNewLevel();
                 firstDone = true;
+            }
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                Debug.developerConsoleVisible = true;
+                Debug.LogError(File.ReadAllText(filename));
             }
             yield return null;
         }
