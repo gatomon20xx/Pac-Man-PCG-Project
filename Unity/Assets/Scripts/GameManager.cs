@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     public GameObject ask4MapPref_UI;
     public GameObject ask4FruitPref_UI;
 
-    bool isRandom = true;
+    bool isRandom = false;
 
     public MapManager mapManager;
     
@@ -74,7 +74,7 @@ public class GameManager : MonoBehaviour
         // Load your pre-trained data here, if desired
         filename = Application.persistentDataPath + "RecordedResponses.txt";
 
-        File.AppendAllText(filename, "Results of Testing" + Environment.NewLine + "This is " + isRandom.ToString() + Environment.NewLine);
+        File.AppendAllText(filename, "ACTUAL Results of Testing:" + Environment.NewLine + "This is " + isRandom.ToString() + Environment.NewLine);
     }
 
     private void Start()
@@ -92,6 +92,14 @@ public class GameManager : MonoBehaviour
         }
 
         WaitForInput2StartNewLevel();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            Invoke(nameof(ResetState), time2Respawn);
+        }
     }
 
     private void WaitForInput2StartNewLevel()
@@ -155,19 +163,29 @@ public class GameManager : MonoBehaviour
     private void NewLevel()
     {
         // Separate Samples used for maps.
-        if (playerPrefs.Lessons < 5)
+        try
+        {
+            if (playerPrefs.Lessons < 5)
+            {
+                m_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
+                pel_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
+                p_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
+                f_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
+            }
+            else
+            {
+                m_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
+                pel_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
+                p_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
+                f_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
+            }
+        }
+        catch
         {
             m_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
             pel_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
             p_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
             f_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
-        }
-        else
-        {
-            m_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
-            pel_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
-            p_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
-            f_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM_FROM_KNOWNS);
         }
 
         mapManager.GetNextLevel(m_sample, pel_sample, p_sample, isRandom);
@@ -469,7 +487,7 @@ public class GameManager : MonoBehaviour
 
             yield return null;
         }
-        File.AppendAllText(filename, "Power Density: " + newPlayerPrefValue.ToString() + Environment.NewLine);
+        File.AppendAllText(filename, "Power Density: " + newPowPrefValue.ToString() + Environment.NewLine);
         ask4PowPref_UI.SetActive(false);
         ask4MapPref_UI.SetActive(true);
         while (!isNextPrefSet)
@@ -540,7 +558,7 @@ public class GameManager : MonoBehaviour
 
             yield return null;
         }
-        File.AppendAllText(filename, "Map Layout: " + newPlayerPrefValue.ToString() + Environment.NewLine);
+        File.AppendAllText(filename, "Map Layout: " + newMapPrefValue.ToString() + Environment.NewLine);
         ask4MapPref_UI.SetActive(false);
         ask4FruitPref_UI.SetActive(true);
         while (!isFruitSet)
@@ -612,14 +630,25 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        File.AppendAllText(filename, "Fruit Frequency: " + newMapPrefValue.ToString() + Environment.NewLine);
+        File.AppendAllText(filename, "Fruit Frequency: " + newFruitPrefValue.ToString() + Environment.NewLine);
 
         Debug.Log("out");
 
-        playerPrefs.AssignPlayerPrefs(m_sample, newPlayerPrefValue);
-        playerPrefs.AssignPlayerPrefs(pel_sample, newPowPrefValue);
-        playerPrefs.AssignPlayerPrefs(p_sample, newMapPrefValue);
-        playerPrefs.AssignPlayerPrefs(f_sample, newFruitPrefValue);
+        try
+        {
+            playerPrefs.AssignPlayerPrefs(m_sample, newPlayerPrefValue);
+            playerPrefs.AssignPlayerPrefs(pel_sample, newPowPrefValue);
+            playerPrefs.AssignPlayerPrefs(p_sample, newMapPrefValue);
+            playerPrefs.AssignPlayerPrefs(f_sample, newFruitPrefValue);
+        }
+        catch
+        {
+            Debug.LogError("Failed to record results");
+            m_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
+            pel_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
+            p_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
+            f_sample = playerPrefs.GenerateASample(SampleGenerationMethod.RANDOM);
+        }
         
         ask4FruitPref_UI.SetActive(false);
         gameOverText.enabled = false;
