@@ -296,7 +296,7 @@ public class PCG
         //public Vector2 pelletDensityMinMax;
 
         // = pow/spaces
-        returnMapFeatures.powerPelletDensity = UnityEngine.Random.Range(0.0f, 1.0f);
+        returnMapFeatures.powerPelletDensity = UnityEngine.Random.Range(0.005f, 0.2f);
 
         // tracked
         returnMapFeatures.smallStopMapGrowth = UnityEngine.Random.Range(0.1f, 0.75f);

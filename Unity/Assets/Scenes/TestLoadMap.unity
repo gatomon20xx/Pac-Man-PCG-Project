@@ -432,7 +432,7 @@ GameObject:
   m_Component:
   - component: {fileID: 176711515}
   - component: {fileID: 176711516}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: HomeOutsideExit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -512,7 +512,7 @@ GameObject:
   - component: {fileID: 194443614}
   - component: {fileID: 194443616}
   - component: {fileID: 194443615}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: PortalExit_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1579,7 +1579,7 @@ GameObject:
   - component: {fileID: 620664839}
   - component: {fileID: 620664841}
   - component: {fileID: 620664840}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: PortalExitFUN_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2392,7 +2392,7 @@ GameObject:
   - component: {fileID: 1088052842}
   - component: {fileID: 1088052844}
   - component: {fileID: 1088052843}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: SpecialNodes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4333,7 +4333,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1656377896}
   - component: {fileID: 1656377897}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: HomeInsideExit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4722,7 +4722,7 @@ GameObject:
   - component: {fileID: 1676980372}
   - component: {fileID: 1676980374}
   - component: {fileID: 1676980373}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: PortalExit_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6351,7 +6351,7 @@ GameObject:
   - component: {fileID: 1845369497}
   - component: {fileID: 1845369499}
   - component: {fileID: 1845369498}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: Portal_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7241,7 +7241,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2447703362535661108, guid: 5d9e29a7782037e4398ba9daad66b4f2, type: 3}
       propertyPath: m_Layer
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 5932801053867136341, guid: 5d9e29a7782037e4398ba9daad66b4f2, type: 3}
       propertyPath: m_LocalPosition.x

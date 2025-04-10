@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     public GameObject ask4MapPref_UI;
     public GameObject ask4FruitPref_UI;
 
-    bool isRandom = false;
+    bool isRandom = true;
 
     public MapManager mapManager;
     
@@ -192,7 +192,7 @@ public class GameManager : MonoBehaviour
 
         if (isRandom)
         {
-            fruitChance = UnityEngine.Random.Range(0.01f, 0.15f);
+            fruitChance = UnityEngine.Random.Range(0.00f, 0.075f);
         }
         else
         {
