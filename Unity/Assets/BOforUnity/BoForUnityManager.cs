@@ -9,7 +9,9 @@ using UnityEngine;
 using UnityEngine.Assertions.Must;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using UnityEngine.SocialPlatforms;
 using UnityEngine.UI;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 using PythonStarter = BOforUnity.Scripts.PythonStarter;
 
 namespace BOforUnity
@@ -297,7 +299,7 @@ namespace BOforUnity
         public bool getLocalPython() { return localPython; }
         public void setLocalPython(bool a) { localPython = a; }
         
-        public string getPythonPath() { return pythonPath; }
+        public string getPythonPath() { return @"C:\Users\gatom\AppData\Local\Programs\Python\Python311\python.exe"; }
         public void setPythonPath(string newPath) { pythonPath = newPath; }
         
         //-----------------------------------------------

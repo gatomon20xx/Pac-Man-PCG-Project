@@ -185,7 +185,7 @@ namespace PCC.CurationMethod.Binary
                 return null;
             }
 
-            if (label == -1)
+            if (label < 0)
             {
                 return new Sample(dislikedBuffer!.Get(sampleIndex));
             }
@@ -198,12 +198,12 @@ namespace PCC.CurationMethod.Binary
         public void RecordSample(Sample sample, int label)
         {
             float eps = 0;
-            if(label == 1)
+            if(label >= 0)
             {
                 eps = posInfluence;
                 likedBuffer?.Add(new HistoricSample(features, sample, eps, sigfigCount));
             }
-            else if(label == -1)
+            else if(label < 0)
             {
                 eps = negInfluence;
                 dislikedBuffer?.Add(new HistoricSample(features, sample, eps, sigfigCount));

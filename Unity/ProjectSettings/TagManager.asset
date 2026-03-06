@@ -2,8 +2,28 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
-  tags: []
+  serializedVersion: 3
+  tags:
+  - BOforUnityManager
+  - QTSelectionHighlight
+  - QTLinearScale
+  - QTQuestionnaireManager
+  - QTQuestionPage
+  - QTSlider
+  - QTMultipleChoice
+  - QTOptionOther
+  - QTButton
+  - QTCheckboxes
+  - QTCheckboxesGrid
+  - QTGridOption
+  - QTDropdown
+  - QTGridRowHeader
+  - QTImage
+  - QTMultipleChoiceGrid
+  - QTManager
+  - QTText
+  - QTTextInput
+  - QTVideo
   layers:
   - Default
   - TransparentFX
@@ -41,3 +61,5 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  m_RenderingLayers:
+  - Default

@@ -110,9 +110,12 @@ public class MapManager : MonoBehaviour
         }
     }
 
-    public void GetNextLevel(Sample sample = null, Sample powsample = null, Sample probsample = null, bool isRandom = false)
+    public void GetNextLevel(Sample sample = null, Sample powsample = null, Sample probsample = null, bool isRandom = false, bool isBayseian = false)
     {
         bool pcgMapWorked = false;
+
+        Debug.Log(isRandom);
+        Debug.Log(isBayseian);
 
         if (isRandom)
         {
@@ -121,7 +124,13 @@ public class MapManager : MonoBehaviour
             if (pcgMapWorked)
                 return;
         }
-        else if(isLoadingNewMapsViaPCG && sample != null && powsample != null && probsample != null)
+        else if (isBayseian)
+        {
+            pcgMapWorked = LoadAndDrawPCGMap(pcg.GenerateMap(pcg.CreateMapFromBayesianParameters()));
+            if (pcgMapWorked)
+                return;
+        }
+        else if (isLoadingNewMapsViaPCG && sample != null && powsample != null && probsample != null)
         {
             // Debug.Log("Not Random");
             pcgMapWorked = LoadAndDrawPCGMap(pcg.GenerateMap(pcg.CreateMapFromPCCSample(sample, powsample, probsample)));
@@ -235,7 +244,38 @@ public class MapManager : MonoBehaviour
                         setTile = tilePellet;
                         break;
                     case 'o':
-                        setTile = tilePelletPower;
+                        try
+                        {
+                            // Attempt to prevent long lines of power pellets by checking surrounding area. If it's valid, place a power pellet.
+                            bool topRow = mapStringsArray[row + 2][col + 2] != 'o' && mapStringsArray[row + 2][col + 1] != 'o' && mapStringsArray[row + 2][col] != 'o' && mapStringsArray[row + 2][col - 1] != 'o' && mapStringsArray[row + 2][col - 2] != 'o';
+                            bool topMidRow = mapStringsArray[row + 1][col + 2] != 'o' && mapStringsArray[row + 1][col + 1] != 'o' && mapStringsArray[row + 1][col] != 'o' && mapStringsArray[row + 1][col - 1] != 'o' && mapStringsArray[row + 1][col - 2] != 'o';
+                            bool midRow = mapStringsArray[row][col + 2] != 'o' && mapStringsArray[row][col + 1] != 'o' && mapStringsArray[row][col - 1] != 'o' && mapStringsArray[row][col - 2] != 'o';
+                            bool botMidRow = mapStringsArray[row - 1][col + 2] != 'o' && mapStringsArray[row - 1][col + 1] != 'o' && mapStringsArray[row - 1][col] != 'o' && mapStringsArray[row - 1][col - 1] != 'o' && mapStringsArray[row - 1][col - 2] != 'o';
+                            bool botRow = mapStringsArray[row - 2][col + 2] != 'o' && mapStringsArray[row - 2][col + 1] != 'o' && mapStringsArray[row - 2][col] != 'o' && mapStringsArray[row - 2][col - 1] != 'o' && mapStringsArray[row - 2][col - 2] != 'o';
+                            if (topRow && topMidRow && midRow && botMidRow && botRow)
+                                setTile = tilePelletPower;
+                            else
+                                setTile = tilePellet;
+                        }
+                        catch
+                        {
+                            // Area checked may be too wide, check smaller area
+                            try
+                            {
+                                bool topMidRow = mapStringsArray[row + 1][col + 1] != 'o' && mapStringsArray[row + 1][col] != 'o' && mapStringsArray[row + 1][col - 1] != 'o';
+                                bool midRow = mapStringsArray[row][col + 1] != 'o' && mapStringsArray[row][col - 1] != 'o';
+                                bool botMidRow = mapStringsArray[row - 1][col + 1] != 'o' && mapStringsArray[row - 1][col] != 'o' && mapStringsArray[row - 1][col - 1] != 'o';
+                                if (topMidRow && midRow && botMidRow)
+                                    setTile = tilePelletPower;
+                                else
+                                    setTile = tilePellet;
+                            }
+                            catch
+                            {
+                            // Tile is on edge of map, should be a portal
+                            setTile = tilePortal;
+                            }
+                        }
                         break;
                     case '|':
                         setTile = tileWall;

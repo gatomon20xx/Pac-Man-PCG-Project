@@ -362,7 +362,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -577,123 +577,63 @@ MonoBehaviour:
   - key: CubeColorR
     value:
       optSeqOrder: 0
-      isDiscrete: 0
       lowerBound: 0
       upperBound: 1
-      step: 0
       Value: 0
-      scriptReference: {fileID: 0}
-      variableName: colorR
-      gameObjectName: TestCubeToOptimize
-      scriptName: ObjectVariableExposer
   - key: CubeColorG
     value:
       optSeqOrder: 0
-      isDiscrete: 0
       lowerBound: 0
       upperBound: 1
-      step: 0
       Value: 0
-      scriptReference: {fileID: 0}
-      variableName: colorG
-      gameObjectName: TestCubeToOptimize
-      scriptName: ObjectVariableExposer
   - key: CubeColorB
     value:
       optSeqOrder: 0
-      isDiscrete: 0
       lowerBound: 0
       upperBound: 1
-      step: 0
       Value: 0
-      scriptReference: {fileID: 0}
-      variableName: colorB
-      gameObjectName: TestCubeToOptimize
-      scriptName: ObjectVariableExposer
   - key: CubeTransparency
     value:
       optSeqOrder: 0
-      isDiscrete: 0
       lowerBound: 0
       upperBound: 1
-      step: 0
       Value: 0
-      scriptReference: {fileID: 0}
-      variableName: colorA
-      gameObjectName: TestCubeToOptimize
-      scriptName: ObjectVariableExposer
   - key: CubeVisibility
     value:
       optSeqOrder: 0
-      isDiscrete: 1
       lowerBound: 0
       upperBound: 1
-      step: 1
       Value: 0
-      scriptReference: {fileID: 0}
-      variableName: isActive
-      gameObjectName: TestCubeToOptimize
-      scriptName: ObjectVariableExposer
   - key: CylinderColorR
     value:
       optSeqOrder: 0
-      isDiscrete: 0
       lowerBound: 0
       upperBound: 1
-      step: 0
       Value: 0
-      scriptReference: {fileID: 0}
-      variableName: colorR
-      gameObjectName: TestCylinderToOptimize
-      scriptName: ObjectVariableExposer
   - key: CylinderColorG
     value:
       optSeqOrder: 0
-      isDiscrete: 0
       lowerBound: 0
       upperBound: 1
-      step: 0
       Value: 0
-      scriptReference: {fileID: 0}
-      variableName: colorG
-      gameObjectName: TestCylinderToOptimize
-      scriptName: ObjectVariableExposer
   - key: CylinderColorB
     value:
       optSeqOrder: 0
-      isDiscrete: 0
       lowerBound: 0
       upperBound: 1
-      step: 0
       Value: 0
-      scriptReference: {fileID: 0}
-      variableName: colorB
-      gameObjectName: TestCylinderToOptimize
-      scriptName: ObjectVariableExposer
   - key: CylinderTransparency
     value:
       optSeqOrder: 0
-      isDiscrete: 0
       lowerBound: 0
       upperBound: 1
-      step: 0
       Value: 0
-      scriptReference: {fileID: 0}
-      variableName: colorA
-      gameObjectName: TestCylinderToOptimize
-      scriptName: ObjectVariableExposer
   - key: CylinderVisibility
     value:
       optSeqOrder: 0
-      isDiscrete: 1
       lowerBound: 0
       upperBound: 1
-      step: 1
       Value: 0
-      scriptReference: {fileID: 0}
-      variableName: isActive
-      gameObjectName: TestCylinderToOptimize
-      scriptName: ObjectVariableExposer
   objectives:
   - key: Trust
     value:
@@ -734,6 +674,7 @@ MonoBehaviour:
   userId: -1
   conditionId: -1
   groupId: -1
+  hasNewDesignParameterValues: 0
   outputText: {fileID: 216295282890673177}
   loadingObj: {fileID: 8959989392408035983}
   nextButton: {fileID: 8856273073719078166}
@@ -742,7 +683,7 @@ MonoBehaviour:
   optimizationRunning: 0
   optimizationFinished: 0
   localPython: 1
-  pythonPath: /usr/local/bin/python3
+  pythonPath: 
 --- !u!114 &8333122899715132410
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -769,6 +710,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPythonProcessRunning: 0
   isSystemStarted: 0
+  pythonInstallStatus: Idle
+  pythonInstallRunning: 0
+  pythonInstallSucceeded: 0
 --- !u!114 &3641083302263556617
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -909,7 +853,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -1259,7 +1203,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1

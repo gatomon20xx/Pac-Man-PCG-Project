@@ -1,0 +1,2 @@
+UserID;ConditionID;GroupID;Timestamp;Iteration;Phase;IsPareto;Enjoyment;Enjoyment;Enjoyment;Enjoyment;pellet_density;power_pellets;small_stop;med_stop;large_stop;sizetwo_grow;sizefour_grow;topbot_mix;long_pieces;fruit_chance
+-1;-1;-1;2026-03-02 14:45:05;1;sampling;FALSE;0.0;0.0;0.0;0.0;0.068;0.225;0.699;0.063;0.375;0.03;0.147;0.339;0.27;0.273

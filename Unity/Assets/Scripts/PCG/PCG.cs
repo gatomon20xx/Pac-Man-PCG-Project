@@ -5,6 +5,8 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using PCC.ContentRepresentation.Sample;
+using BOforUnity;
+using static BOforUnity.BoForUnityManager;
 
 
 // TODO: I don't believe MonoBehavior is requisite for this class.
@@ -21,6 +23,8 @@ public class PCG
     private List<StringBuilder> baseStringBuilderArray;
 
     private Map map;
+
+    BoForUnityManager bo = GameObject.Find("BOforUnityManager").GetComponent<BoForUnityManager>();
 
     // These can be LEARNED or hard coded values.
     // Once the game starts, these values stay the same.
@@ -363,6 +367,50 @@ public class PCG
 
         // Not tracked -- ignore
         returnMapFeatures.isSymetric = UnityEngine.Random.Range(0.0f, 1.0f) <= 0.5f;
+
+        Debug.Log("PCG map made");
+
+        return returnMapFeatures;
+    }
+
+    public MapFeatures CreateMapFromBayesianParameters()
+    {
+        MapFeatures returnMapFeatures = new MapFeatures();
+
+        // tracked
+        returnMapFeatures.totPelletDensity = bo.parameters[0].value.Value;
+
+        // tracked
+        returnMapFeatures.powerPelletDensity = bo.parameters[1].value.Value;
+
+        // tracked
+        returnMapFeatures.smallStopMapGrowth = bo.parameters[2].value.Value;
+
+        // tracked
+        returnMapFeatures.medStopMapGrowth = bo.parameters[3].value.Value;
+
+        // tracked
+        returnMapFeatures.larStopMapGrowth = bo.parameters[4].value.Value;
+
+        // tracked
+        returnMapFeatures.sizeTwoMapExtend = bo.parameters[5].value.Value;
+
+        // tracked
+        returnMapFeatures.sizeFourMapExtend = bo.parameters[6].value.Value;
+
+        // tracked
+        returnMapFeatures.topAndBotMapJoin = bo.parameters[7].value.Value;
+
+        // tracked
+        returnMapFeatures.maxLongPieces = (int)Math.Floor(bo.parameters[8].value.Value);
+
+        // Not tracked -- ignore
+        returnMapFeatures.rangePower2Power = new Vector2(UnityEngine.Random.Range(1.0f, 1.0f), UnityEngine.Random.Range(1.0f, 1.0f));
+
+        // Not tracked -- ignore
+        returnMapFeatures.isSymetric = UnityEngine.Random.Range(0.0f, 1.0f) <= 0.5f;
+
+        Debug.Log("Bayesian map made");
 
         return returnMapFeatures;
     }
