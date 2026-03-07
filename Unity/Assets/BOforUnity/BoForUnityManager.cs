@@ -22,7 +22,9 @@ namespace BOforUnity
         public Optimizer optimizer;
         public MainThreadDispatcher mainThreadDispatcher;
         public SocketNetwork socketNetwork;
+        public RawImage rawImage;
 
+        private WebCamTexture webCamTexture;
         private static BoForUnityManager _instance;
         
         //-----------------------------------------------
@@ -65,8 +67,10 @@ namespace BOforUnity
         public string groupId = "-1";
 
         public bool hasNewDesignParameterValues;
+
+        private Material webcamMaterial;
         //-----------------------------------------------
-        
+
         //-----------------------------------------------
         private void Awake()
         {
@@ -84,11 +88,12 @@ namespace BOforUnity
             optimizer = gameObject.GetComponent<Optimizer>();
             mainThreadDispatcher = gameObject.GetComponent<MainThreadDispatcher>();
             socketNetwork = gameObject.GetComponent<SocketNetwork>();
+            webcamMaterial = GameObject.Find("Webcam").GetComponent<Renderer>().material;
 
             currentIteration = 1;
             totalIterations = numSamplingIterations + numOptimizationIterations; // set how many iterations the optimizer should run for
         }
-        
+
         void Start()
         {
             loadingObj.SetActive(true);
@@ -99,6 +104,35 @@ namespace BOforUnity
             perfectRating = false;
             perfectRatingStart = false;
             simulationRunning = true; // the simulation to true to prevent 
+
+            // Get permission to use the camera.
+            if (Application.HasUserAuthorization(UserAuthorization.WebCam))
+            {
+                WebCamDevice[] devices = WebCamTexture.devices;
+                if (devices.Length == 0)
+                {
+                    Debug.Log("No camera found.");
+                    return;
+                }
+
+                // User first camera available.
+                foreach (WebCamDevice webcam in devices)
+                {
+                    Debug.Log(webcam.name);
+                }
+                webCamTexture = new WebCamTexture(devices[0].name, 1280, 720, 30);
+                rawImage.texture = webCamTexture;
+
+                webcamMaterial.mainTexture = webCamTexture;
+
+                // Starts the webcam.
+                webCamTexture.Play();
+                Debug.Log("Camera found!");
+            }
+            else
+            {
+                Debug.Log("Camera authorization not granted.");
+            }
         }
         
         void Update()
@@ -123,6 +157,15 @@ namespace BOforUnity
         
         public bool optimizationRunning = false;
         public bool optimizationFinished = false;
+
+        //Snap an image from the webcam
+        public void SnapImage()
+        {
+            Texture2D snap = new Texture2D(webCamTexture.width, webCamTexture.height, TextureFormat.RGB24, false);
+            snap.SetPixels(webCamTexture.GetPixels());
+            snap.Apply();
+            socketNetwork.AnalyzeEmotion(snap);
+        }
 
         //Starts a new iteration
         public void ButtonNextIteration()

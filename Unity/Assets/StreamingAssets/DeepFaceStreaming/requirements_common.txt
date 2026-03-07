@@ -1,0 +1,9 @@
+deepface
+pandas>=1.3
+Pillow>=9.0
+tqdm
+gdown
+mtcnn
+retina-face
+fire
+gunicorn

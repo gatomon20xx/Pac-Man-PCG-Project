@@ -75,9 +75,12 @@ namespace BOforUnity.Scripts
     public class SocketNetwork : MonoBehaviour
     {
         private Socket _serverSocket;
+        private Socket _deepfaceSocket;
         private IPAddress _ip;
-        private IPEndPoint _ipEnd;
-        private Thread _connectThread;
+        private IPEndPoint _ipEndMain;
+        private IPEndPoint _ipEndDeepFace;
+        private Thread _connectThreadMain;
+        private Thread _connectThreadDeep;
         private volatile bool _stopRequested;
         private volatile bool _connectionClosedByPeer;
         private volatile bool _optimizationFinished;
@@ -105,13 +108,16 @@ namespace BOforUnity.Scripts
         {
             _bomanager = gameObject.GetComponent<BoForUnityManager>();
             _ip = IPAddress.Parse("127.0.0.1");
-            _ipEnd = new IPEndPoint(_ip, 56001);
+            _ipEndMain = new IPEndPoint(_ip, 56001);
+            _ipEndDeepFace = new IPEndPoint(_ip, 5000);
 
             _stopRequested = false;
             _connectionClosedByPeer = false;
             _optimizationFinished = false;
-            _connectThread = new Thread(SocketReceive) { IsBackground = true };
-            _connectThread.Start();
+            _connectThreadMain = new Thread(SocketReceive) { IsBackground = true };
+            _connectThreadDeep = new Thread(DeepfaceSocketReceive) { IsBackground = true };
+            _connectThreadMain.Start();
+            _connectThreadDeep.Start();
         }
 
         private void OnDestroy()
@@ -120,6 +126,52 @@ namespace BOforUnity.Scripts
         }
 
         // -------------------- Socket loop --------------------
+        private void DeepfaceSocketReceive()
+        {
+            try
+            {
+                deepfaceSocketConnect();
+                int recvEmote = _deepfaceSocket.Receive(_recvBuf);
+                var chunk = Encoding.UTF8.GetString(_recvBuf, 0, recvEmote);
+                _lineBuf.Append(chunk);
+
+                int newlineIndex;
+                while ((newlineIndex = _lineBuf.ToString().IndexOf('\n')) >= 0)
+                {
+                    string line = _lineBuf.ToString(0, newlineIndex).TrimEnd('\r');
+                    _lineBuf.Remove(0, newlineIndex + 1);
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+
+                    try
+                    {
+                        ParseJsonMessage(line);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"Error in ParseJsonMessage: {ex.Message}\n{ex.StackTrace}\nPayload: {line}");
+                    }
+                }
+            }
+            catch (SocketException ex)
+            {
+                if (_stopRequested || _connectionClosedByPeer)
+                {
+                    Debug.Log("Socket connection closed.");
+                }
+                else
+                {
+                    Debug.LogError($"SocketReceive SocketException: {ex.SocketErrorCode} {ex.Message}");
+                    MainThreadDispatcher.Execute(OnSocketConnectionFailed);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message != "Thread was being aborted.")
+                {
+                    Debug.LogError($"Error in SocketReceive: {ex.Message}\n{ex.StackTrace}");
+                }
+            }
+        }
         private void SocketReceive()
         {
             try
@@ -195,7 +247,14 @@ namespace BOforUnity.Scripts
             _serverSocket?.Close();
             _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             Debug.Log("Unity is ready to connect...");
-            _serverSocket.Connect(_ipEnd);
+            _serverSocket.Connect(_ipEndMain);
+        }
+
+        private void deepfaceSocketConnect()
+        {
+            _deepfaceSocket?.Close();
+            _deepfaceSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _deepfaceSocket.Connect(_ipEndDeepFace);
         }
 
         private void OnSocketConnectionFailed()
@@ -283,6 +342,12 @@ namespace BOforUnity.Scripts
                 case "objectives":
                 {
                     // Python never sends this unsolicited; Unity sends objectives to Python.
+                    break;
+                }
+
+                case "image":
+                {
+                    Debug.Log(json.ToString());
                     break;
                 }
 
@@ -377,6 +442,18 @@ namespace BOforUnity.Scripts
             SocketSendLine(json);
         }
 
+        public void AnalyzeEmotion(Texture2D texture)
+        {
+            byte[] imageBytes = texture.EncodeToJPG();
+            string base64image = System.Convert.ToBase64String(imageBytes);
+
+            string json = "{\"image\":\"" + base64image + "\"}";
+            string line = json + "\n"; // NDJSON framing
+            byte[] sendData = Encoding.UTF8.GetBytes(line);
+            Debug.Log("Unity sending: " + json);
+            _deepfaceSocket.Send(sendData, sendData.Length, SocketFlags.None);
+        }
+
         // -------------------- Low-level send/quit --------------------
         private void SocketSendLine(string json)
         {
@@ -394,16 +471,18 @@ namespace BOforUnity.Scripts
 
             try { _serverSocket?.Shutdown(SocketShutdown.Both); } catch { }
             try { _serverSocket?.Close(); } catch { }
+            try { _deepfaceSocket?.Shutdown(SocketShutdown.Both); } catch { }
+            try { _deepfaceSocket?.Close(); } catch { }
 
-            if (_connectThread != null)
+            if (_connectThreadMain != null)
             {
-                try { _connectThread.Interrupt(); } catch { }
-                try { _connectThread.Join(200); } catch { }
-                if (_connectThread.IsAlive)
+                try { _connectThreadMain.Interrupt(); } catch { }
+                try { _connectThreadMain.Join(200); } catch { }
+                if (_connectThreadMain.IsAlive)
                 {
-                    try { _connectThread.Abort(); } catch { }
+                    try { _connectThreadMain.Abort(); } catch { }
                 }
-                _connectThread = null;
+                _connectThreadMain = null;
             }
 
         }

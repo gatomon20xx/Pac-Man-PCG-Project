@@ -21,13 +21,18 @@ namespace BOforUnity.Scripts
     public class PythonStarter : MonoBehaviour
     {
         private string pythonExecutable;
+        private string deepfaceEnvironment;
         private Process pythonProcess;
+        private Process deepfaceProcess;
 
         public bool isPythonProcessRunning;
         public bool isSystemStarted = false;
 
         private string outputFilePath;
         private StreamWriter outputFileWriter;
+
+        private string deepOutputFilePath;
+        private StreamWriter deepOutputFileWriter;
 
         private BoForUnityManager _bomanager;
 
@@ -107,14 +112,18 @@ namespace BOforUnity.Scripts
             // Construct the full path to the Python script based on the platform.
 #if UNITY_EDITOR
             string fullPath = Path.Combine(Application.streamingAssetsPath, "BOData", "BayesianOptimization", moboScriptName);
+            string deepPath = Path.Combine(Application.streamingAssetsPath, "DeepFaceStreaming", "emotion_server.py");
 #elif UNITY_STANDALONE_WIN
             string bayesianOptimizationPath = Path.Combine(Application.streamingAssetsPath, "BOData", "BayesianOptimization");
             string fullPath = Path.Combine(bayesianOptimizationPath, moboScriptName);
+            string deepPath = Path.Combine(Application.streamingAssetsPath, "DeepFaceStreaming", "emotion_server.py");
 #elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
             string bayesianOptimizationPath = Path.Combine(Application.streamingAssetsPath, "BOData", "BayesianOptimization");
             string fullPath = Path.Combine(bayesianOptimizationPath, moboScriptName);
+            string deepPath = Path.Combine(Application.streamingAssetsPath, "DeepFaceStreaming", "emotion_server.py");
 #else
             string fullPath = Path.Combine(Application.streamingAssetsPath, "BOData", "BayesianOptimization", moboScriptName);
+            string deepPath = Path.Combine(Application.streamingAssetsPath, "DeepFaceStreaming", "emotion_server.py");
 #endif
 
             // Log the full path to the Python script.
@@ -124,8 +133,11 @@ namespace BOforUnity.Scripts
             outputFilePath = Path.Combine(Application.streamingAssetsPath, "BOData", "BayesianOptimization", "output.txt");
             outputFileWriter = new StreamWriter(outputFilePath);
 
+            deepOutputFilePath = Path.Combine(Application.streamingAssetsPath, "DeepFaceStreaming", "output.txt");
+            deepOutputFileWriter = new StreamWriter(deepOutputFilePath);
+
             // Start Python process only after pip finished
-            CreateProcess(fullPath);
+            CreateProcess(fullPath, deepPath);
         }
 
         private void Update()
@@ -148,12 +160,12 @@ namespace BOforUnity.Scripts
             }
         }
 
-        private void CreateProcess(string fullPath)
+        private void CreateProcess(string fullPath, string deepPath)
         {
-            StartCoroutine(RestartPythonProcessCoroutine(fullPath));
+            StartCoroutine(RestartPythonProcessCoroutine(fullPath, deepPath));
         }
 
-        private IEnumerator RestartPythonProcessCoroutine(string fullPath)
+        private IEnumerator RestartPythonProcessCoroutine(string fullPath, string deepPath)
         {
             yield return new WaitForSeconds(0.25f); // small delay
 
@@ -206,6 +218,62 @@ namespace BOforUnity.Scripts
                     _bomanager.outputText.text = "The system could not be started...\nPlease restart the application.";
                 if (_bomanager != null) _bomanager.loadingObj.SetActive(false);
             }
+
+
+
+
+
+
+
+            deepfaceProcess = new Process();
+            deepfaceProcess.StartInfo.FileName = deepfaceEnvironment;
+            deepfaceProcess.StartInfo.Arguments = $"\"{deepPath}\"";
+            deepfaceProcess.StartInfo.WorkingDirectory = GetDeepAppPath();
+            deepfaceProcess.StartInfo.UseShellExecute = false;
+            deepfaceProcess.StartInfo.CreateNoWindow = true;
+            deepfaceProcess.StartInfo.RedirectStandardOutput = true;
+            deepfaceProcess.StartInfo.RedirectStandardError = true;
+            deepfaceProcess.EnableRaisingEvents = true;
+
+            deepfaceProcess.OutputDataReceived += (sender, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    outputFileWriter.WriteLine(e.Data);
+                    outputFileWriter.Flush();
+                    Debug.LogWarning("Python Output: " + e.Data);
+
+                    if (e.Data.IndexOf("Server starts, waiting for connection...", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        isSystemStarted = true;
+                    }
+                }
+            };
+            deepfaceProcess.ErrorDataReceived += (sender, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    Debug.LogError("Python Error: " + e.Data);
+                }
+            };
+            deepfaceProcess.Exited += (sender, args) => Debug.LogWarning("Python process exited with code: " + pythonProcess.ExitCode);
+
+            try
+            {
+                deepfaceProcess.Start();
+                isPythonProcessRunning = true;
+                deepfaceProcess.BeginOutputReadLine();
+                deepfaceProcess.BeginErrorReadLine();
+                Debug.Log("Python process started successfully.");
+            }
+            catch (Exception ex)
+            {
+                Debug.Log("Failed to start Python process: " + ex.Message);
+                isPythonProcessRunning = false;
+                if (_bomanager?.outputText != null)
+                    _bomanager.outputText.text = "The system could not be started...\nPlease restart the application.";
+                if (_bomanager != null) _bomanager.loadingObj.SetActive(false);
+            }
         }
 
         public void StopPythonProcess()
@@ -224,6 +292,21 @@ namespace BOforUnity.Scripts
 
                 pythonProcess.Dispose();
                 pythonProcess = null;
+            }
+            if (deepfaceProcess != null)
+            {
+                try
+                {
+                    if (!deepfaceProcess.HasExited)
+                    {
+                        deepfaceProcess.Kill();
+                        deepfaceProcess.WaitForExit();
+                    }
+                }
+                catch { /* ignore */ }
+
+                deepfaceProcess.Dispose();
+                deepfaceProcess = null;
             }
         }
 
@@ -272,6 +355,22 @@ namespace BOforUnity.Scripts
             applicationPath = Path.Combine(Application.dataPath, "StreamingAssets", "BOData");
 #else
             applicationPath = Path.Combine(Application.dataPath, "StreamingAssets", "BOData");
+#endif
+            return applicationPath;
+        }
+
+        // Get the DeepFace application path based on the current platform.
+        private string GetDeepAppPath()
+        {
+            string applicationPath = "";
+#if UNITY_EDITOR
+            applicationPath = Path.Combine(Application.dataPath, "StreamingAssets", "DeepFaceStreaming");
+#elif UNITY_STANDALONE_WIN
+            applicationPath = Path.Combine(Application.dataPath, "StreamingAssets", "DeepFaceStreaming");
+#elif UNITY_STANDALONE_OSX
+            applicationPath = Path.Combine(Application.dataPath, "StreamingAssets", "DeepFaceStreaming");
+#else
+            applicationPath = Path.Combine(Application.dataPath, "StreamingAssets", "DeepFaceStreaming");
 #endif
             return applicationPath;
         }
@@ -405,6 +504,7 @@ namespace BOforUnity.Scripts
             // 4. Evaluate each candidate to determine the newest version.
             string newestPython = "";
             Version newestVersion = new Version(0, 0, 0);
+            Version tooNew = new Version(3, 12, 0);
             foreach (var candidate in candidates)
             {
                 try
@@ -437,7 +537,7 @@ namespace BOforUnity.Scripts
                                 if (Version.TryParse(versionString, out Version ver))
                                 {
                                     Debug.Log("Candidate: " + candidate + " has version: " + ver);
-                                    if (ver > newestVersion)
+                                    if (ver > newestVersion && ver < tooNew)
                                     {
                                         newestVersion = ver;
                                         newestPython = candidate;
@@ -647,9 +747,25 @@ namespace BOforUnity.Scripts
 
                     // Build path to requirements.txt inside StreamingAssets
                     string reqPath = Path.Combine(Application.streamingAssetsPath, "BOData", "Installation", "requirements.txt");
+                    // Create virtual environment due to incompatibilities.
+                    string venvPath = Path.Combine(Path.GetDirectoryName(pythonPath), "deepface-env");
+                    Debug.Log(venvPath);
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+                    string deepReqPath = Path.Combine(Application.streamingAssetsPath, "DeepFaceStreaming", "requirements_windows.txt");
+#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+                    string deepReqPath = Path.Combine(Application.streamingAssetsPath, "DeepFaceStreaming", "requirements_mac_silicon.txt");
+#else
+                    string deepReqPath = Path.Combine(Application.streamingAssetsPath, "DeepFaceStreaming", "requirements_mac_intel.txt");
+#endif
                     if (!File.Exists(reqPath))
                     {
                         pythonInstallStatus = "requirements.txt not found. Skipping install.";
+                        return false;
+                    }
+
+                    if (!File.Exists(deepReqPath))
+                    {
+                        pythonInstallStatus = "requirements_common.txt not found. Skipping install.";
                         return false;
                     }
 
@@ -669,8 +785,36 @@ namespace BOforUnity.Scripts
                         return false;
                     }
 
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+                    string pipPath = Path.Combine(venvPath, "Scripts", "python");
+                    deepfaceEnvironment = pipPath;
+#else
+                    string pipPath = Path.Combine(venvPath, "bin", "python");
+#endif
+
+                    if (!Directory.Exists(venvPath))
+                    {
+                        pythonInstallStatus = "Creating DeepFace environment…";
+                        rc = RunProcessBlocking(pythonPath, "-m venv " + venvPath);
+                        if (rc != 0)
+                        {
+                            pythonInstallStatus = $"venv failed ({rc}).";
+                            return false;
+                        }
+                        Debug.Log("Should have made a venv here.");
+                    }
+
                     pythonInstallStatus = "Installing Python dependencies…";
                     rc = RunProcessBlocking(pythonPath, $"-m pip install --user -r \"{reqPath}\"");
+                    if (rc != 0)
+                    {
+                        pythonInstallStatus = $"requirements install failed ({rc}).";
+                        return false;
+                    }
+
+
+                    pythonInstallStatus = "Installing DeepFace dependencies…";
+                    rc = RunProcessBlocking(pipPath, $"-m pip install -r \"{deepReqPath}\"");
                     if (rc != 0)
                     {
                         pythonInstallStatus = $"requirements install failed ({rc}).";

@@ -6,10 +6,9 @@ import base64
 import numpy as np
 import cv2
 
-from Assets.StreamingAssets.BOData.BayesianOptimization.bo import N_ITERATIONS
 
 HOST = ''
-PORT = 56002
+PORT = 5000
 
 def send_json_line(conn, obj):
     line = json.dumps(obj, ensure_ascii=False) + "\n"
@@ -43,6 +42,7 @@ def analyze(conn):
 
 def main():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind((HOST, PORT))
     s.listen(1)
     print('Server starts, waiting for connection...', flush=True)

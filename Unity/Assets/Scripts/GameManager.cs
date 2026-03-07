@@ -33,8 +33,6 @@ public class GameManager : MonoBehaviour
     public GameObject ask4MapPref_UI;
     public GameObject ask4FruitPref_UI;
 
-    private Socket socket;
-
     public bool usingEmotion = false;
     public bool usingBayesianOptimization = false;
     public bool isRandom = true;
@@ -116,7 +114,6 @@ public class GameManager : MonoBehaviour
             Invoke(nameof(ResetState), time2Respawn);
         }
     }
-
 
     private void WaitForInput2StartNewLevel()
     {
@@ -692,6 +689,11 @@ public class GameManager : MonoBehaviour
         }
         NewLevel();
         WaitForInput2StartNewLevel();
+    }
+
+    public void sendEmotionImage()
+    {
+        bo.SnapImage();
     }
 
     //PATTERN, UPDATE: use events
