@@ -151,15 +151,21 @@ namespace BOforUnity.Scripts
                     
                     string line = _deepLineBuf.ToString();
                     Debug.Log(line);
+                    string[] messages = line.Split('\n');
+                    for (int i = 0; i < messages.Length - 1; i++)
+                    {
+                        Debug.Log(line);
 
-                    try
-                    {
-                        ParseEmotionMessage(line);
+                        try
+                        {
+                            ParseEmotionMessage(messages[i]);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogError($"Error in ParseJsonMessage: {ex.Message}\n{ex.StackTrace}\nPayload: {line}");
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        Debug.LogError($"Error in ParseJsonMessage: {ex.Message}\n{ex.StackTrace}\nPayload: {line}");
-                    }
+                    line = messages[messages.Length - 1];
                 }
             }
             catch (SocketException ex)
@@ -461,7 +467,7 @@ namespace BOforUnity.Scripts
 
         public void AnalyzeEmotion(Texture2D texture)
         {
-            byte[] imageBytes = texture.EncodeToJPG(75);
+            byte[] imageBytes = texture.EncodeToJPG();
             byte[] length = BitConverter.GetBytes(imageBytes.Length);
             // string base64image = System.Convert.ToBase64String(imageBytes);
 

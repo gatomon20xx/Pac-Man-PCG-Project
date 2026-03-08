@@ -68,7 +68,7 @@ namespace BOforUnity
 
         public bool hasNewDesignParameterValues;
 
-        private Material webcamMaterial;
+        // private Material webcamMaterial;
         //-----------------------------------------------
 
         //-----------------------------------------------
@@ -88,7 +88,7 @@ namespace BOforUnity
             optimizer = gameObject.GetComponent<Optimizer>();
             mainThreadDispatcher = gameObject.GetComponent<MainThreadDispatcher>();
             socketNetwork = gameObject.GetComponent<SocketNetwork>();
-            webcamMaterial = GameObject.Find("Webcam").GetComponent<Renderer>().material;
+            // webcamMaterial = GameObject.Find("Webcam").GetComponent<Renderer>().material;
 
             currentIteration = 1;
             totalIterations = numSamplingIterations + numOptimizationIterations; // set how many iterations the optimizer should run for
@@ -105,34 +105,9 @@ namespace BOforUnity
             perfectRatingStart = false;
             simulationRunning = true; // the simulation to true to prevent 
 
-            webcamMaterial = Resources.Load<Material>(@"Webcam Material/WebcamMaterial");
+            // webcamMaterial = Resources.Load<Material>(@"Webcam Material/WebcamMaterial");
             // Get permission to use the camera.
-            if (Application.HasUserAuthorization(UserAuthorization.WebCam))
-            {
-                WebCamDevice[] devices = WebCamTexture.devices;
-                if (devices.Length == 0)
-                {
-                    Debug.Log("No camera found.");
-                    return;
-                }
-
-                // User first camera available.
-                foreach (WebCamDevice webcam in devices)
-                {
-                    Debug.Log(webcam.name);
-                }
-                webCamTexture = new WebCamTexture(devices[0].name, 640, 480, 10);
-
-                webcamMaterial.mainTexture = webCamTexture;
-
-                // Starts the webcam.
-                webCamTexture.Play();
-                Debug.Log("Camera found!");
-            }
-            else
-            {
-                Debug.Log("Camera authorization not granted.");
-            }
+            StartCoroutine(RestartCameraCoroutine());
         }
         
         void Update()
@@ -142,10 +117,13 @@ namespace BOforUnity
                 _waitingForPythonProcess = false;
                 PythonInitializationDone();
             }
+            // Debug.Log(webCamTexture.didUpdateThisFrame);
+            Debug.Log(webCamTexture.width);
+            Debug.Log(webCamTexture.isPlaying);
         }
         //-----------------------------------------------
-        
-        
+
+
         // CONTROLLER SCENE
         //-----------------------------------------------
         public TMP_Text outputText;
@@ -171,6 +149,7 @@ namespace BOforUnity
         //Starts a new iteration
         public void ButtonNextIteration()
         {
+            webCamTexture.Stop(); // Turn webcam off for reload.
             loadingObj.SetActive(true); // show loading
             nextButton.SetActive(false); // hide next button
 
@@ -208,9 +187,12 @@ namespace BOforUnity
 
                 simulationRunning = true; // waiting for the simulation to finish
 
-                webCamTexture.Stop();                                   // Turn webcam off for reload.
+                
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name); // reload scene
-                webCamTexture.Play();                                   // Turn webcam back on.
+
+                Debug.Log("scene reloaded");
+
+                StartCoroutine(RestartCameraCoroutine());
             }
             else if (currentIteration > totalIterations || isPerfect)
             {
@@ -233,6 +215,39 @@ namespace BOforUnity
             }
         }
         
+        System.Collections.IEnumerator RestartCameraCoroutine()
+        {
+            // yield return new WaitForEndOfFrame();
+
+            if (Application.HasUserAuthorization(UserAuthorization.WebCam))
+            {
+                WebCamDevice[] devices = WebCamTexture.devices;
+                if (devices.Length == 0)
+                {
+                    Debug.Log("No camera found.");
+                }
+
+                // User first camera available.
+                foreach (WebCamDevice webcam in devices)
+                {
+                    Debug.Log(webcam.name);
+                }
+                webCamTexture = new WebCamTexture(devices[0].name, 1280, 720, 15);
+
+                // webcamMaterial.mainTexture = webCamTexture;
+
+                // Starts the webcam.
+                webCamTexture.Play();
+                Debug.Log("Camera found!");
+            }
+            else
+            {
+                Debug.Log("Camera authorization not granted.");
+            }
+
+            yield return new WaitUntil(() => webCamTexture.width > 16);
+        }
+
         public void OptimizationStart()
         {
             Debug.Log("Optimization START");

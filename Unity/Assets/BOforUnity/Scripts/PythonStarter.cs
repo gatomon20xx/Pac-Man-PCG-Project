@@ -253,7 +253,7 @@ namespace BOforUnity.Scripts
             {
                 if (!string.IsNullOrEmpty(e.Data))
                 {
-                    Debug.LogError("Python Error: " + e.Data);
+                   // Debug.LogError("Python Error: " + e.Data);
                 }
             };
             deepfaceProcess.Exited += (sender, args) => Debug.LogWarning("Python process exited with code: " + pythonProcess.ExitCode);
