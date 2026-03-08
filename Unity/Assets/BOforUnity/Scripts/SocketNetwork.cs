@@ -17,6 +17,8 @@ namespace BOforUnity.Scripts
 {
     // -------------------- JSON DTOs --------------------
     [Serializable] class MsgBase { public string type; }
+    [Serializable] class EmoBase { public string dominant_emotion; public EmoScores emotion; }
+    [Serializable] class EmoScores { public float happy; public float sad; public float angry; public float disgust; public float fear; public float surprise; public float neutral; }
 
     [Serializable] class InitMsg : MsgBase
     {
@@ -92,7 +94,9 @@ namespace BOforUnity.Scripts
 
         // TCP buffer for NDJSON framing
         private readonly byte[] _recvBuf = new byte[4096];
+        private readonly byte[] _deepBuf = new byte[4096];
         private readonly StringBuilder _lineBuf = new StringBuilder(4096);
+        private readonly StringBuilder _deepLineBuf = new StringBuilder(4096);
 
         // JSON settings
         private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
@@ -128,23 +132,29 @@ namespace BOforUnity.Scripts
         // -------------------- Socket loop --------------------
         private void DeepfaceSocketReceive()
         {
+            Thread.Sleep(2000);
             try
             {
                 deepfaceSocketConnect();
-                int recvEmote = _deepfaceSocket.Receive(_recvBuf);
-                var chunk = Encoding.UTF8.GetString(_recvBuf, 0, recvEmote);
-                _lineBuf.Append(chunk);
-
-                int newlineIndex;
-                while ((newlineIndex = _lineBuf.ToString().IndexOf('\n')) >= 0)
+                while (true)
                 {
-                    string line = _lineBuf.ToString(0, newlineIndex).TrimEnd('\r');
-                    _lineBuf.Remove(0, newlineIndex + 1);
-                    if (string.IsNullOrWhiteSpace(line)) continue;
+                    // Debug.Log("Take data");
+                    int recvEmote = _deepfaceSocket.Receive(_deepBuf);
+
+                    // Make sure it only gets NEW data.
+                    if (recvEmote == 0) continue;
+
+                    Debug.Log("help");
+
+                    var chunky = Encoding.UTF8.GetString(_deepBuf, 0, recvEmote);
+                    _deepLineBuf.Append(chunky);
+                    
+                    string line = _deepLineBuf.ToString();
+                    Debug.Log(line);
 
                     try
                     {
-                        ParseJsonMessage(line);
+                        ParseEmotionMessage(line);
                     }
                     catch (Exception ex)
                     {
@@ -345,8 +355,9 @@ namespace BOforUnity.Scripts
                     break;
                 }
 
-                case "image":
+                case "emotion":
                 {
+                    Debug.Log("You got an image!");
                     Debug.Log(json.ToString());
                     break;
                 }
@@ -355,6 +366,12 @@ namespace BOforUnity.Scripts
                     Debug.LogWarning($"Unknown message type: {peek.type}");
                     break;
             }
+        }
+
+        private void ParseEmotionMessage(string json)
+        {
+            EmoBase peek = JsonConvert.DeserializeObject<EmoBase>(json);
+            Debug.Log(peek.dominant_emotion.ToString());
         }
 
         // -------------------- Protocol: outgoing --------------------
@@ -444,14 +461,16 @@ namespace BOforUnity.Scripts
 
         public void AnalyzeEmotion(Texture2D texture)
         {
-            byte[] imageBytes = texture.EncodeToJPG();
-            string base64image = System.Convert.ToBase64String(imageBytes);
+            byte[] imageBytes = texture.EncodeToJPG(75);
+            byte[] length = BitConverter.GetBytes(imageBytes.Length);
+            // string base64image = System.Convert.ToBase64String(imageBytes);
 
-            string json = "{\"image\":\"" + base64image + "\"}";
-            string line = json + "\n"; // NDJSON framing
-            byte[] sendData = Encoding.UTF8.GetBytes(line);
-            Debug.Log("Unity sending: " + json);
-            _deepfaceSocket.Send(sendData, sendData.Length, SocketFlags.None);
+            // string json = "{\"image\":\"" + base64image + "\"}";
+            // string line = json + "\n"; // NDJSON framing
+            // byte[] sendData = Encoding.UTF8.GetBytes(line);
+            Debug.Log("Unity sending: " + length);
+            _deepfaceSocket.Send(length, SocketFlags.None);
+            _deepfaceSocket.Send(imageBytes, SocketFlags.None);
         }
 
         // -------------------- Low-level send/quit --------------------

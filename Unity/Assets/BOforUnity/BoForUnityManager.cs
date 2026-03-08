@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using BOforUnity.Scripts;
 using QuestionnaireToolkit.Scripts;
@@ -22,7 +23,6 @@ namespace BOforUnity
         public Optimizer optimizer;
         public MainThreadDispatcher mainThreadDispatcher;
         public SocketNetwork socketNetwork;
-        public RawImage rawImage;
 
         private WebCamTexture webCamTexture;
         private static BoForUnityManager _instance;
@@ -83,7 +83,7 @@ namespace BOforUnity
             // Mark this object as the single instance and make it persistent
             _instance = this;
             DontDestroyOnLoad(gameObject);
-            
+
             pythonStarter = gameObject.GetComponent<PythonStarter>();
             optimizer = gameObject.GetComponent<Optimizer>();
             mainThreadDispatcher = gameObject.GetComponent<MainThreadDispatcher>();
@@ -105,6 +105,7 @@ namespace BOforUnity
             perfectRatingStart = false;
             simulationRunning = true; // the simulation to true to prevent 
 
+            webcamMaterial = Resources.Load<Material>(@"Webcam Material/WebcamMaterial");
             // Get permission to use the camera.
             if (Application.HasUserAuthorization(UserAuthorization.WebCam))
             {
@@ -120,8 +121,7 @@ namespace BOforUnity
                 {
                     Debug.Log(webcam.name);
                 }
-                webCamTexture = new WebCamTexture(devices[0].name, 1280, 720, 30);
-                rawImage.texture = webCamTexture;
+                webCamTexture = new WebCamTexture(devices[0].name, 640, 480, 10);
 
                 webcamMaterial.mainTexture = webCamTexture;
 
@@ -164,6 +164,7 @@ namespace BOforUnity
             Texture2D snap = new Texture2D(webCamTexture.width, webCamTexture.height, TextureFormat.RGB24, false);
             snap.SetPixels(webCamTexture.GetPixels());
             snap.Apply();
+            Debug.Log("Prepare to snap!");
             socketNetwork.AnalyzeEmotion(snap);
         }
 
@@ -206,8 +207,10 @@ namespace BOforUnity
                 Debug.Log("--------------------------------------Current Iteration: " + currentIteration);
 
                 simulationRunning = true; // waiting for the simulation to finish
-                
+
+                webCamTexture.Stop();                                   // Turn webcam off for reload.
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name); // reload scene
+                webCamTexture.Play();                                   // Turn webcam back on.
             }
             else if (currentIteration > totalIterations || isPerfect)
             {

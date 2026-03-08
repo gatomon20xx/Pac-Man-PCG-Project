@@ -593,7 +593,7 @@ public class GameManager : MonoBehaviour
             ask4FruitPref_UI.SetActive(true);
             while (!isFruitSet)
             {
-                Debug.Log("in");
+                // Debug.Log("in");
 
                 // Using if, else if on purpose --- can't make more than one selection!
                 if (Input.GetKeyDown(keyCode_9))
@@ -666,6 +666,7 @@ public class GameManager : MonoBehaviour
 
             try
             {
+                bo.SnapImage();
                 playerPrefs.AssignPlayerPrefs(m_sample, newPlayerPrefValue);
                 playerPrefs.AssignPlayerPrefs(pel_sample, newPowPrefValue);
                 playerPrefs.AssignPlayerPrefs(p_sample, newMapPrefValue);
