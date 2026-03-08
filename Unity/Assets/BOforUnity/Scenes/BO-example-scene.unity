@@ -17574,7 +17574,7 @@ MonoBehaviour:
   ask4FruitPref_UI: {fileID: 484226377}
   usingEmotion: 0
   usingBayesianOptimization: 0
-  isRandom: 0
+  isRandom: 1
   mapManager: {fileID: 1464455128}
   qtManager: {fileID: 6172444193540686654}
   keyCode_9: 57

@@ -24,7 +24,6 @@ namespace BOforUnity
         public MainThreadDispatcher mainThreadDispatcher;
         public SocketNetwork socketNetwork;
 
-        private WebCamTexture webCamTexture;
         private static BoForUnityManager _instance;
         
         //-----------------------------------------------
@@ -104,10 +103,6 @@ namespace BOforUnity
             perfectRating = false;
             perfectRatingStart = false;
             simulationRunning = true; // the simulation to true to prevent 
-
-            // webcamMaterial = Resources.Load<Material>(@"Webcam Material/WebcamMaterial");
-            // Get permission to use the camera.
-            StartCoroutine(RestartCameraCoroutine());
         }
         
         void Update()
@@ -117,9 +112,6 @@ namespace BOforUnity
                 _waitingForPythonProcess = false;
                 PythonInitializationDone();
             }
-            // Debug.Log(webCamTexture.didUpdateThisFrame);
-            Debug.Log(webCamTexture.width);
-            Debug.Log(webCamTexture.isPlaying);
         }
         //-----------------------------------------------
 
@@ -137,19 +129,19 @@ namespace BOforUnity
         public bool optimizationFinished = false;
 
         //Snap an image from the webcam
-        public void SnapImage()
+        public void SnapImage(Texture2D snap)
         {
-            Texture2D snap = new Texture2D(webCamTexture.width, webCamTexture.height, TextureFormat.RGB24, false);
-            snap.SetPixels(webCamTexture.GetPixels());
-            snap.Apply();
-            Debug.Log("Prepare to snap!");
             socketNetwork.AnalyzeEmotion(snap);
+        }
+
+        public string ReturnEmotion()
+        {
+            return socketNetwork.ReturnEmotion();
         }
 
         //Starts a new iteration
         public void ButtonNextIteration()
         {
-            webCamTexture.Stop(); // Turn webcam off for reload.
             loadingObj.SetActive(true); // show loading
             nextButton.SetActive(false); // hide next button
 
@@ -191,8 +183,6 @@ namespace BOforUnity
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name); // reload scene
 
                 Debug.Log("scene reloaded");
-
-                StartCoroutine(RestartCameraCoroutine());
             }
             else if (currentIteration > totalIterations || isPerfect)
             {
@@ -213,39 +203,6 @@ namespace BOforUnity
                 loadingObj.SetActive(false);
                 nextButton.SetActive(false);
             }
-        }
-        
-        System.Collections.IEnumerator RestartCameraCoroutine()
-        {
-            // yield return new WaitForEndOfFrame();
-
-            if (Application.HasUserAuthorization(UserAuthorization.WebCam))
-            {
-                WebCamDevice[] devices = WebCamTexture.devices;
-                if (devices.Length == 0)
-                {
-                    Debug.Log("No camera found.");
-                }
-
-                // User first camera available.
-                foreach (WebCamDevice webcam in devices)
-                {
-                    Debug.Log(webcam.name);
-                }
-                webCamTexture = new WebCamTexture(devices[0].name, 1280, 720, 15);
-
-                // webcamMaterial.mainTexture = webCamTexture;
-
-                // Starts the webcam.
-                webCamTexture.Play();
-                Debug.Log("Camera found!");
-            }
-            else
-            {
-                Debug.Log("Camera authorization not granted.");
-            }
-
-            yield return new WaitUntil(() => webCamTexture.width > 16);
         }
 
         public void OptimizationStart()

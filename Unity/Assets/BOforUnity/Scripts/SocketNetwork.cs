@@ -89,6 +89,7 @@ namespace BOforUnity.Scripts
 
         public float coverage = 0f;
         public float tempCoverage = 0f;
+        private string recentEmotion;
 
         private BoForUnityManager _bomanager;
 
@@ -152,18 +153,16 @@ namespace BOforUnity.Scripts
                     string line = _deepLineBuf.ToString();
                     Debug.Log(line);
                     string[] messages = line.Split('\n');
-                    for (int i = 0; i < messages.Length - 1; i++)
-                    {
                         Debug.Log(line);
 
-                        try
-                        {
-                            ParseEmotionMessage(messages[i]);
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.LogError($"Error in ParseJsonMessage: {ex.Message}\n{ex.StackTrace}\nPayload: {line}");
-                        }
+                    try
+                    {
+                        recentEmotion = messages[messages.Length - 2];
+                        ParseEmotionMessage(messages[messages.Length - 2]);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"Error in ParseJsonMessage: {ex.Message}\n{ex.StackTrace}\nPayload: {line}");
                     }
                     line = messages[messages.Length - 1];
                 }
@@ -477,6 +476,11 @@ namespace BOforUnity.Scripts
             Debug.Log("Unity sending: " + length);
             _deepfaceSocket.Send(length, SocketFlags.None);
             _deepfaceSocket.Send(imageBytes, SocketFlags.None);
+        }
+
+        public string ReturnEmotion()
+        {
+            return recentEmotion;
         }
 
         // -------------------- Low-level send/quit --------------------

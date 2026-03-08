@@ -81,13 +81,18 @@ public class GameManager : MonoBehaviour
     public static int Level = 0;
 
     string filename;
+    string deepFilename;
+
+    private WebCamTexture webCamTexture;
 
     private void Awake()
     {
         // Load your pre-trained data here, if desired
         filename = Application.persistentDataPath + "RecordedResponses.txt";
+        deepFilename = Application.persistentDataPath + "EmotionScan.txt";
         bo = GameObject.Find("BOforUnityManager").GetComponent<BoForUnityManager>();
         File.AppendAllText(filename, "ACTUAL Results of Testing:" + Environment.NewLine + "This is " + isRandom.ToString() + Environment.NewLine);
+        File.AppendAllText(deepFilename, "Here are the emotions of each trial." + Environment.NewLine);
     }
 
     private void Start()
@@ -104,6 +109,10 @@ public class GameManager : MonoBehaviour
             this.ghosts[i].gameObject.SetActive(false);
         }
 
+        // webcamMaterial = Resources.Load<Material>(@"Webcam Material/WebcamMaterial");
+        // Get permission to use the camera.
+        StartCoroutine(RestartCameraCoroutine());
+
         WaitForInput2StartNewLevel();
     }
 
@@ -113,6 +122,11 @@ public class GameManager : MonoBehaviour
         {
             Invoke(nameof(ResetState), time2Respawn);
         }
+    }
+
+    private void OnDestroy()
+    {
+        webCamTexture.Stop();
     }
 
     private void WaitForInput2StartNewLevel()
@@ -365,6 +379,10 @@ public class GameManager : MonoBehaviour
         {
             sr = File.CreateText(filename);
         }
+        if (!File.Exists(deepFilename))
+        {
+            sr = File.CreateText(deepFilename);
+        }
 
         bool isPrefSet = false;
         bool isPelSet = false;
@@ -376,7 +394,7 @@ public class GameManager : MonoBehaviour
         float newMapPrefValue = 0;
         float newFruitPrefValue = 0.01f;
 
-        bo.SnapImage();
+        sendEmotionImage();
         if (!usingBayesianOptimization)
         {
             while (!isPrefSet)
@@ -688,13 +706,59 @@ public class GameManager : MonoBehaviour
         {
             if (qtManager) qtManager.StartQuestionnaire();
         }
+        File.AppendAllText(deepFilename, trialsDone.ToString() + ": " + bo.ReturnEmotion() + Environment.NewLine);
         NewLevel();
         WaitForInput2StartNewLevel();
     }
 
     public void sendEmotionImage()
     {
-        bo.SnapImage();
+        Texture2D snap = new Texture2D(webCamTexture.width, webCamTexture.height, TextureFormat.RGB24, false);
+        snap.SetPixels(webCamTexture.GetPixels());
+        snap.Apply();
+        Debug.Log("Prepare to snap!");
+        bo.SnapImage(snap);
+    }
+
+    IEnumerator RestartCameraCoroutine()
+    {
+        yield return new WaitForEndOfFrame();
+
+        if (Application.HasUserAuthorization(UserAuthorization.WebCam))
+        {
+            try
+            {
+                webCamTexture.Stop();
+            }
+            catch
+            {
+
+            }
+            WebCamDevice[] devices = WebCamTexture.devices;
+            if (devices.Length == 0)
+            {
+                Debug.Log("No camera found.");
+            }
+
+            // User first camera available.
+            foreach (WebCamDevice webcam in devices)
+            {
+                Debug.Log(webcam.name);
+            }
+            webCamTexture = new WebCamTexture(devices[0].name, 1280, 720, 15);
+
+            // webcamMaterial.mainTexture = webCamTexture;
+
+            // Starts the webcam.
+            webCamTexture.Play();
+            Debug.Log("Camera found!");
+        }
+        else
+        {
+            Debug.Log("Camera authorization not granted.");
+        }
+
+        yield return new WaitUntil(() => webCamTexture.width > 16);
     }
 
     //PATTERN, UPDATE: use events
